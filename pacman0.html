@@ -13,8 +13,9 @@
   let f3 = null;
   let f4 = null;
   let portal = null;
-  let hola = null; 
-  let f = "";
+
+  //Movimiento De Pacman
+
 
   function make(data, attribute) {
     return Object.assign({}, data, attribute);
@@ -56,6 +57,8 @@
           } if(cell == 10) {
             processing.fill(0, 200, 200);
             processing.image(f4, j * SIZE + 13, i * SIZE + 13);
+          } if(cell == 8){
+            processing.fill(0, 200, 200);
           }
         } );
       });
@@ -64,6 +67,10 @@
         processing.image(bloque, x, y)
 
   }
+
+  //Funciones para movimiento 
+
+
 
 
   /**
@@ -94,15 +101,26 @@
      * Esto se llama antes de iniciar el juego
      */
     processing.setup = function () {
-      processing.frameRate(2);
+      processing.frameRate(4);
       processing.size(WIDTH, HEIGHT);
       cerezas = processing.loadImage('images/cerezas.png');
       f1 = processing.loadImage('images/f1.png');
       f2 = processing.loadImage('images/f2.png');
       f3 = processing.loadImage('images/f3.png');
       f4 = processing.loadImage('images/f4.png');
-      portal = processing.loadImage("portal.gif");
-      processing.state = { time: 0, pacman: { x: 10, y: 5 }, phantone: [{ x: 1, y: 10 }] };
+      pacman1 = processing.loadImage('images/pacman1.png');
+      pacman2 = processing.loadImage('images/pacman2.png');
+      pacman3 = processing.loadImage('images/pacman3.png');
+      portal = processing.loadImage("images/portal.gif");
+      processing.state = { 
+        time: 0,
+        pacman: { x: 10, y: 5 }, 
+        phantone: [{ x: 1, y: 10 }] ,
+        ejex: false,
+        ejey: false,
+        xMove: true,
+        yMove: true
+      };
     }
     // Dibuja algo en el canvas. Aqui se pone todo lo que quieras pintar
     processing.drawGame = function (world) {
@@ -114,11 +132,17 @@
       createMap(processing,mapa,world);
 
       //Pacman
+      /*
       processing.fill(240, 240, 30);
       if (world.time % 2 == 0)
         processing.arc(world.pacman.x * SIZE, world.pacman.y * SIZE, SIZE, SIZE, -Math.PI * 3 / 4, Math.PI * 3 / 4);
       else
         processing.arc(world.pacman.x * SIZE, world.pacman.y * SIZE, SIZE, SIZE, 0, Math.PI * 2);
+    */
+     if (world.time % 2 == 0)
+         processing.image(pacman1, j * SIZE , i * SIZE +10, 150 , 100);
+     else
+         processing.image(pacman3, j * SIZE , i * SIZE + 10, 150 , 100);
     
     }
 
@@ -126,7 +150,24 @@
      * Cambia la posición del objeto moviendolo 1 unidad a la derecha. 
      */
     processing.onTic = function (world) {
-      return make(world, {});
+      return make(world, {time: world.time + 1});
+    }
+
+    processing.onKeyEvent = function (world, keyCode) {
+      switch (keyCode) {
+        case processing.UP:
+          return make(world, { ejex:false, ejey: true, yMove: true });
+          break;
+        case processing.DOWN:
+          return make(world, { ejex:false, ejey: true, yMove: false });
+          break;
+        case processing.LEFT:
+          return make(world, { ejex: true, ejey: false, xMove: false });
+          break;
+        case processing.RIGHT:
+          return make(world, { ejex: true, ejey: false, xMove: true });
+          break;
+      }
     }
 
     processing.onMouseEvent = function (world, event) {
