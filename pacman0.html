@@ -50,7 +50,11 @@
             processing.image(portal, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
           } if(cell == 7) {
             processing.fill(0, 200, 200);
-            processing.image(cerezas, j * SIZE, i * SIZE, 60, 40);
+            if (world.time % 2 == 0)
+              processing.image(cerezas, j * SIZE, i * SIZE +10, 60, 40);
+            else
+              processing.image(cerezas, j * SIZE, i * SIZE -10, 60, 40);
+
           } if(cell == 9) {
             processing.fill(0, 200, 200);
             processing.image(f3, j * SIZE + 13, i * SIZE + 13);
@@ -69,6 +73,14 @@
   }
 
   //Funciones para movimiento 
+
+  function movimiento(world){
+    if(world.ejex && world.xMove) return make(world, {time: world.time + 1, pacmanx: world.pacmanx + 50});
+    if(world.ejex && !world.xMove) return make(world, {time: world.time + 1, pacmanx: world.pacmanx - 50});
+    if(world.ejey && world.yMove) return make(world, {time: world.time + 1, pacmany: world.pacmany - 50});
+    if(world.ejey && !world.yMove) return make(world, {time: world.time + 1, pacmany: world.pacmany + 50});
+    if(!world.ejey && !world.ejex) return make(world, {time: world.time + 1});
+  }
 
 
 
@@ -101,7 +113,7 @@
      * Esto se llama antes de iniciar el juego
      */
     processing.setup = function () {
-      processing.frameRate(4);
+      processing.frameRate(5);
       processing.size(WIDTH, HEIGHT);
       cerezas = processing.loadImage('images/cerezas.png');
       f1 = processing.loadImage('images/f1.png');
@@ -114,7 +126,8 @@
       portal = processing.loadImage("images/portal.gif");
       processing.state = { 
         time: 0,
-        pacman: { x: 10, y: 5 }, 
+        pacmanx: 50, 
+        pacmany: 35, 
         phantone: [{ x: 1, y: 10 }] ,
         ejex: false,
         ejey: false,
@@ -140,9 +153,9 @@
         processing.arc(world.pacman.x * SIZE, world.pacman.y * SIZE, SIZE, SIZE, 0, Math.PI * 2);
     */
      if (world.time % 2 == 0)
-         processing.image(pacman1, j * SIZE , i * SIZE +10, 150 , 100);
+         processing.image(pacman1, world.pacmanx , world.pacmany, 150 , 100);
      else
-         processing.image(pacman3, j * SIZE , i * SIZE + 10, 150 , 100);
+         processing.image(pacman3,  world.pacmanx , world.pacmany, 150 , 100);
     
     }
 
@@ -150,7 +163,7 @@
      * Cambia la posición del objeto moviendolo 1 unidad a la derecha. 
      */
     processing.onTic = function (world) {
-      return make(world, {time: world.time + 1});
+      return movimiento(world);
     }
 
     processing.onKeyEvent = function (world, keyCode) {
