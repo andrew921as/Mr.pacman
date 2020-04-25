@@ -51,9 +51,9 @@
           } if(cell == 7) {
             processing.fill(0, 200, 200);
             if (world.time % 2 == 0)
-              processing.image(cerezas, j * SIZE, i * SIZE +10, 60, 40);
+              processing.image(cerezas, j * SIZE, i * SIZE , 45, 45);
             else
-              processing.image(cerezas, j * SIZE, i * SIZE -10, 60, 40);
+              processing.image(cerezas, j * SIZE, i * SIZE , 50, 50);
 
           } if(cell == 9) {
             processing.fill(0, 200, 200);
@@ -115,7 +115,7 @@
     processing.setup = function () {
       processing.frameRate(5);
       processing.size(WIDTH, HEIGHT);
-      cerezas = processing.loadImage('images/cerezas.png');
+      cerezas = processing.loadImage('images/barriles2.2.png');
       f1 = processing.loadImage('images/f1.png');
       f2 = processing.loadImage('images/f2.png');
       f3 = processing.loadImage('images/f3.png');
