@@ -74,14 +74,40 @@
 
   //Funciones para movimiento 
 
+  
   function movimiento(world){
-    if(world.ejex && world.xMove) return make(world, {time: world.time + 1, pacmanx: world.pacmanx + 50});
-    if(world.ejex && !world.xMove) return make(world, {time: world.time + 1, pacmanx: world.pacmanx - 50});
-    if(world.ejey && world.yMove) return make(world, {time: world.time + 1, pacmany: world.pacmany - 50});
-    if(world.ejey && !world.yMove) return make(world, {time: world.time + 1, pacmany: world.pacmany + 50});
+    if(world.ejex && world.xMove && (colisionRIGHT(world))) return make(world, { ejex:false, ejey: false });
+    if(world.ejex && !world.xMove && (colisionLEFT(world))) return make(world, { ejex:false, ejey: false});
+    if(world.ejey && world.yMove && (colisionUP(world))) return make(world, { ejex:false, ejey: false });
+    if(world.ejey && !world.yMove && (colisionDOWN(world))) return make(world, { ejex:false, ejey: false});
+
+    if(world.ejex && world.xMove) return make(world, {time: world.time + 1, pacmanx: world.pacmanx + 50, posicionPacmanx: world.posicionPacmanx + 1});
+    if(world.ejex && !world.xMove) return make(world, {time: world.time + 1, pacmanx: world.pacmanx - 50, posicionPacmanx: world.posicionPacmanx - 1});
+    if(world.ejey && world.yMove) return make(world, {time: world.time + 1, pacmany: world.pacmany - 50, posicionPacmany: world.posicionPacmany - 1});
+    if(world.ejey && !world.yMove) return make(world, {time: world.time + 1, pacmany: world.pacmany + 50, posicionPacmany: world.posicionPacmany + 1});
     if(!world.ejey && !world.ejex) return make(world, {time: world.time + 1});
   }
 
+
+  function colisionUP(world){
+    if(mapa[world.posicionPacmany - 1][world.posicionPacmanx] == 1) return true;
+    return false;
+  }
+
+  function colisionDOWN(world){
+    if(mapa[world.posicionPacmany + 1][world.posicionPacmanx] == 1) return true;
+    return false;
+  }
+
+  function colisionRIGHT(world){
+    if(mapa[world.posicionPacmany][world.posicionPacmanx + 1] == 1) return true;
+    return false;
+  }
+
+  function colisionLEFT(world){
+    if(mapa[world.posicionPacmany][world.posicionPacmanx - 1] == 1) return true;
+    return false;
+  }
 
 
 
@@ -126,8 +152,10 @@
       portal = processing.loadImage("images/portal.gif");
       processing.state = { 
         time: 0,
-        pacmanx: 50, 
-        pacmany: 35,
+        pacmanx: 11 * SIZE, 
+        pacmany: 8.7 * SIZE,
+        posicionPacmanx: 12,
+        posicionPacmany: 9, 
         phantone: [{ x: 1, y: 10 }] ,
         ejex: false,
         ejey: false,
