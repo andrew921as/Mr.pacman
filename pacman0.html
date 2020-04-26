@@ -27,7 +27,7 @@
       forEach(rest(l), f, index + 1);
     }
   }
-
+//Funcion para crear el mapa
   function createMap(processing, mapa, world){
     forEach(mapa, (row, i) => {
         forEach(row, (cell, j) => {
@@ -127,12 +127,13 @@
       processing.state = { 
         time: 0,
         pacmanx: 50, 
-        pacmany: 35, 
+        pacmany: 35,
         phantone: [{ x: 1, y: 10 }] ,
         ejex: false,
         ejey: false,
         xMove: true,
-        yMove: true
+        yMove: true,
+         
       };
     }
     // Dibuja algo en el canvas. Aqui se pone todo lo que quieras pintar
