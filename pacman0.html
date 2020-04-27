@@ -7,7 +7,10 @@
   // Importamos las librerias
   let { append, cons, first, isEmpty, isList, length, rest } = functionalLight;
 
-  let cerezas = null;
+  let pacman1 = null;
+  let pacman2 = null;
+  let pacman3 = null;
+  let barriles = null;
   let f1 = null;
   let f2 = null;
   let f3 = null;
@@ -27,40 +30,41 @@
       forEach(rest(l), f, index + 1);
     }
   }
+
 //Funcion para crear el mapa
   function createMap(processing, mapa, world){
     forEach(mapa, (row, i) => {
         forEach(row, (cell, j) => {
           if (cell == 0) {
+            activo = true;
             processing.fill(0, 0, 0);
             processing.rect(j * SIZE, i * SIZE, SIZE, SIZE);
             processing.fill(57, 255, 20);
-            processing.ellipse(j * SIZE + SIZE / 2, i * SIZE + SIZE / 2, SIZE / 3, SIZE / 3);
+            processing.ellipse(j * SIZE + SIZE / 2, i * SIZE + SIZE / 2, SIZE / 3 , SIZE / 3 );
           } if(cell == 1) {
             processing.fill(0, 0, 200);
             processing.rect(j * SIZE, i * SIZE, SIZE, SIZE);
           } if (cell == 2) {
             processing.fill(0, 0, 0);
-            processing.image(f1, j * SIZE + 13, i * SIZE + 13);
           } if (cell == 3) {
             processing.fill(0, 0, 0);
-            processing.image(f2, j * SIZE + 13, i * SIZE + 13);
           } if (cell == 6) {
             processing.fill(0, 0, 0);
-            processing.image(portal, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
+            
+            if (world.time % 2 == 0)
+              processing.image(portal, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
+            else
+              processing.image(portal, j * SIZE + 7.5 , i * SIZE + 7.5 , 35 , 35 );
           } if(cell == 7) {
             processing.fill(0, 200, 200);
             if (world.time % 2 == 0)
-              processing.image(cerezas, j * SIZE, i * SIZE , 45, 45);
+              processing.image(barriles, j * SIZE, i * SIZE , 45, 45);
             else
-              processing.image(cerezas, j * SIZE, i * SIZE , 50, 50);
-
+              processing.image(barriles, j * SIZE, i * SIZE , 50, 50);
           } if(cell == 9) {
             processing.fill(0, 200, 200);
-            processing.image(f3, j * SIZE + 13, i * SIZE + 13);
           } if(cell == 10) {
             processing.fill(0, 200, 200);
-            processing.image(f4, j * SIZE + 13, i * SIZE + 13);
           } if(cell == 8){
             processing.fill(0, 200, 200);
           }
@@ -76,18 +80,52 @@
 
   
   function movimiento(world){
-    if(world.ejex && world.xMove && (colisionRIGHT(world))) return make(world, { ejex:false, ejey: false });
-    if(world.ejex && !world.xMove && (colisionLEFT(world))) return make(world, { ejex:false, ejey: false});
-    if(world.ejey && world.yMove && (colisionUP(world))) return make(world, { ejex:false, ejey: false });
-    if(world.ejey && !world.yMove && (colisionDOWN(world))) return make(world, { ejex:false, ejey: false});
+    const time1 = world.time;
+    const animacion = world.pacmanAnimacion;
+    if(animacion < 3){
+                if(world.ejex && world.xMove && (colisionRIGHT(world))) return { time: time1 + 1, pacmanAnimacion: animacion + 1, ejex:false, ejey: false };
+                if(world.ejex && !world.xMove && (colisionLEFT(world))) return  { time: time1 + 1, pacmanAnimacion: animacion + 1, ejex:false, ejey: false};
+                if(world.ejey && world.yMove && (colisionUP(world))) return  { time: time1 + 1, pacmanAnimacion: animacion + 1, ejex:false, ejey: false };
+                if(world.ejey && !world.yMove && (colisionDOWN(world))) return { time: time1 + 1, pacmanAnimacion: animacion + 1, ejex:false, ejey: false};
 
-    if(world.ejex && world.xMove) return make(world, {time: world.time + 1, pacmanx: world.pacmanx + 50, posicionPacmanx: world.posicionPacmanx + 1});
-    if(world.ejex && !world.xMove) return make(world, {time: world.time + 1, pacmanx: world.pacmanx - 50, posicionPacmanx: world.posicionPacmanx - 1});
-    if(world.ejey && world.yMove) return make(world, {time: world.time + 1, pacmany: world.pacmany - 50, posicionPacmany: world.posicionPacmany - 1});
-    if(world.ejey && !world.yMove) return make(world, {time: world.time + 1, pacmany: world.pacmany + 50, posicionPacmany: world.posicionPacmany + 1});
-    if(!world.ejey && !world.ejex) return make(world, {time: world.time + 1});
+                if(world.ejex && world.xMove) return {time: time1 + 1, pacmanAnimacion: animacion + 1, pacmanx: world.pacmanx + SIZE, posicionPacmanx: world.posicionPacmanx + 1};
+                if(world.ejex && !world.xMove) return {time: time1 + 1, pacmanAnimacion: animacion + 1, pacmanx: world.pacmanx - SIZE, posicionPacmanx: world.posicionPacmanx - 1};
+                if(world.ejey && world.yMove) return {time: time1 + 1, pacmanAnimacion: animacion + 1, pacmany: world.pacmany - SIZE, posicionPacmany: world.posicionPacmany - 1};
+                if(world.ejey && !world.yMove) return {time: time1 + 1, pacmanAnimacion: animacion + 1, pacmany: world.pacmany + SIZE, posicionPacmany: world.posicionPacmany + 1};
+                if(!world.ejey && !world.ejex) return {time: time1 + 1, pacmanAnimacion: animacion + 1};
+    } else {
+      if(world.ejex && world.xMove && (colisionRIGHT(world))) return { time: time1 + 1, pacmanAnimacion: 1, ejex:false, ejey: false };
+                if(world.ejex && !world.xMove && (colisionLEFT(world))) return  { time: time1 + 1, pacmanAnimacion: 1, ejex:false, ejey: false};
+                if(world.ejey && world.yMove && (colisionUP(world))) return  { time: time1 + 1, pacmanAnimacion: 1, ejex:false, ejey: false };
+                if(world.ejey && !world.yMove && (colisionDOWN(world))) return {time: time1 + 1, pacmanAnimacion: 1, ejex:false, ejey: false};
+
+                if(world.ejex && world.xMove) return {time: time1 + 1, pacmanAnimacion: 1, pacmanx: world.pacmanx + SIZE, posicionPacmanx: world.posicionPacmanx + 1};
+                if(world.ejex && !world.xMove) return {time: time1 + 1, pacmanAnimacion: 1, pacmanx: world.pacmanx - SIZE, posicionPacmanx: world.posicionPacmanx - 1};
+                if(world.ejey && world.yMove) return {time: time1 + 1, pacmanAnimacion: 1, pacmany: world.pacmany - SIZE, posicionPacmany: world.posicionPacmany - 1};
+                if(world.ejey && !world.yMove) return {time: time1 + 1, pacmanAnimacion: 1, pacmany: world.pacmany + SIZE, posicionPacmany: world.posicionPacmany + 1};
+                if(!world.ejey && !world.ejex) return {time: time1 + 1, pacmanAnimacion: 1};
+    }
+
   }
 
+  function pintarPacman(processing,world){
+    if (world.pacmanAnimacion == 1) processing.image(pacman1, world.pacmanx , world.pacmany, 150 , 100);
+    if (world.pacmanAnimacion == 2) processing.image(pacman2,  world.pacmanx , world.pacmany, 150 , 100);
+    if (world.pacmanAnimacion == 3) processing.image(pacman3,  world.pacmanx , world.pacmany, 150 , 100);
+  }
+
+  function comer(processing,world){
+    activo= true
+    if(mapa[world.posicionPacmany][world.posicionPacmanx] == 0 && activo){
+      activo = false;
+      processing.fill(0, 0, 0);
+      processing.rect(world.posicionPacmanx * SIZE, world.posicionPacmany * SIZE, SIZE, SIZE);
+      pintarPacman(processing,world);
+    } else if(!activo){
+      processing.fill(0, 0, 0);
+      processing.rect(world.posicionPacmanx * SIZE, world.posicionPacmany * SIZE, SIZE, SIZE);
+    }
+  }
 
   function colisionUP(world){
     if(mapa[world.posicionPacmany - 1][world.posicionPacmanx] == 1) return true;
@@ -119,33 +157,37 @@
   const HEIGHT = 900;
   const SIZE = 50;
   const mapa=[[5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5],
-[5,5,5,1,0,0,0,0,0,0,0,7,1,7,0,0,0,0,0,0,0,1,5,5,5],
-[1,1,1,1,0,6,1,0,0,0,0,0,1,0,0,0,0,0,1,6,0,1,1,1,1],
-[1,7,0,0,0,1,1,0,1,1,0,0,6,0,0,1,1,0,1,1,0,0,0,7,1],
-[1,0,0,0,0,0,0,0,1,0,0,1,1,1,0,0,1,0,0,0,0,0,0,0,1],
-[1,0,1,0,1,0,1,0,1,0,0,0,7,0,0,0,1,0,1,0,1,0,1,0,1],
-[4,0,1,0,1,0,1,0,0,0,1,1,3,1,1,0,0,0,1,0,1,0,1,0,4],
-[4,0,0,0,0,0,0,7,1,0,1,2,9,10,1,0,1,7,0,0,0,0,0,0,4],
-[4,0,1,1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1,1,0,4],
-[1,0,1,1,0,1,1,0,0,0,0,0,8,0,0,0,0,0,1,1,0,1,1,0,1],
-[1,0,1,7,0,0,1,0,1,0,0,1,1,1,0,0,1,0,1,0,0,7,1,0,1],
-[1,0,0,0,1,0,0,0,1,0,0,0,6,0,0,0,1,0,0,0,1,0,0,0,1],
-[1,1,1,1,6,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,6,1,1,1,1],
-[5,5,5,1,0,0,0,0,0,0,0,7,1,7,0,0,0,0,0,0,0,1,5,5,5],
-[5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5]];
+              [5,5,5,1,0,0,0,0,0,0,0,7,1,7,0,0,0,0,0,0,0,1,5,5,5],
+              [1,1,1,1,0,6,1,0,0,0,0,0,1,0,0,0,0,0,1,6,0,1,1,1,1],
+              [1,7,0,0,0,1,1,0,1,1,0,0,6,0,0,1,1,0,1,1,0,0,0,7,1],
+              [1,0,0,0,0,0,0,0,1,0,0,1,1,1,0,0,1,0,0,0,0,0,0,0,1],
+              [1,0,1,0,1,0,1,0,1,0,0,0,7,0,0,0,1,0,1,0,1,0,1,0,1],
+              [4,0,1,0,1,0,1,0,0,0,1,1,3,1,1,0,0,0,1,0,1,0,1,0,4],
+              [4,0,0,0,0,0,0,7,1,0,1,2,9,10,1,0,1,7,0,0,0,0,0,0,4],
+              [4,0,1,1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1,1,0,4],
+              [1,0,1,1,0,1,1,0,0,0,0,0,8,0,0,0,0,0,1,1,0,1,1,0,1],
+              [1,0,1,7,0,0,1,0,1,0,0,1,1,1,0,0,1,0,1,0,0,7,1,0,1],
+              [1,0,0,0,1,0,0,0,1,0,0,0,6,0,0,0,1,0,0,0,1,0,0,0,1],
+              [1,1,1,1,6,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,6,1,1,1,1],
+              [5,5,5,1,0,0,0,0,0,0,0,7,1,7,0,0,0,0,0,0,0,1,5,5,5],
+              [5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5]];
 
   function sketchProc(processing) {
     /**
      * Esto se llama antes de iniciar el juego
      */
     processing.setup = function () {
-      processing.frameRate(5);
+      processing.frameRate(6);
       processing.size(WIDTH, HEIGHT);
-      cerezas = processing.loadImage('images/barriles2.2.png');
+      barriles = processing.loadImage('images/barriles2.2.png');
       f1 = processing.loadImage('images/f1.png');
+      f1_2 = processing.loadImage('images/f1-2.png');
       f2 = processing.loadImage('images/f2.png');
+      f2_2 = processing.loadImage('images/f2-2.png');
       f3 = processing.loadImage('images/f3.png');
+      f3_2 = processing.loadImage('images/f3-2.png');
       f4 = processing.loadImage('images/f4.png');
+      f4_2 = processing.loadImage('images/f4-2.png');
       pacman1 = processing.loadImage('images/pacman1.png');
       pacman2 = processing.loadImage('images/pacman2.png');
       pacman3 = processing.loadImage('images/pacman3.png');
@@ -156,43 +198,72 @@
         pacmany: 8.7 * SIZE,
         posicionPacmanx: 12,
         posicionPacmany: 9, 
+        pacmanAnimacion: 1,
+        comerPacman : false,
         phantone: [{ x: 1, y: 10 }] ,
         ejex: false,
         ejey: false,
         xMove: true,
         yMove: true,
+
          
       };
     }
     // Dibuja algo en el canvas. Aqui se pone todo lo que quieras pintar
     processing.drawGame = function (world) {
       processing.background(0, 0, 0);
-      //Pintamos a pacman con la boca abierta
-      processing.fill(10, 240, 30);
-
       //Mapa
       createMap(processing,mapa,world);
 
       //Pacman
-      /*
-      processing.fill(240, 240, 30);
-      if (world.time % 2 == 0)
-        processing.arc(world.pacman.x * SIZE, world.pacman.y * SIZE, SIZE, SIZE, -Math.PI * 3 / 4, Math.PI * 3 / 4);
-      else
-        processing.arc(world.pacman.x * SIZE, world.pacman.y * SIZE, SIZE, SIZE, 0, Math.PI * 2);
-    */
-     if (world.time % 2 == 0)
-         processing.image(pacman1, world.pacmanx , world.pacmany, 150 , 100);
-     else
-         processing.image(pacman3,  world.pacmanx , world.pacmany, 150 , 100);
+
+     
+      pintarPacman(processing,world);
+
+
+
+     //COMER
+
+
+      comer(processing,world);
     
+
+      //Fantasmas
+
+      if (world.time % 2 == 0)
+        processing.image(f1, 13 * SIZE + 2 , 7 * SIZE + 2, 47, 47);
+      else 
+        processing.image(f1_2, 13 * SIZE + 2 , 7 * SIZE + 2, 47, 47);
+
+      if (world.time % 2 == 0)
+        processing.image(f2, 12 * SIZE , 6 * SIZE, 50, 50);
+      else 
+        processing.image(f2_2, 12 * SIZE , 6 * SIZE, 50, 50);
+
+      if (world.time % 2 == 0)
+        processing.image(f3, 12 * SIZE , 7 * SIZE, 50, 50);
+      else 
+        processing.image(f3_2, 12 * SIZE , 7 * SIZE, 50, 50);
+
+      if (world.time % 2 == 0)
+        processing.image(f4, 11 * SIZE , 7 * SIZE, 50, 50);
+      else 
+        processing.image(f4_2, 11 * SIZE , 7 * SIZE, 50, 50);
+
+
+      //processing.image(f1, 13 * SIZE + 2 , 7 * SIZE + 2, 48, 48);
+      //processing.image(f2, 12 * SIZE , 6 * SIZE, 50, 50);
+      //processing.image(f3, 12 * SIZE , 7 * SIZE, 50, 50);
+      //processing.image(f4, 11 * SIZE , 7 * SIZE, 50 ,50);
+
+
     }
 
     /**
      * Cambia la posición del objeto moviendolo 1 unidad a la derecha. 
      */
     processing.onTic = function (world) {
-      return movimiento(world);
+      return make(world, movimiento(world));
     }
 
     processing.onKeyEvent = function (world, keyCode) {
