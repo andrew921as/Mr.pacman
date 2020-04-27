@@ -1,6 +1,6 @@
 /**
  * functional-light - Librería para el curso de programación funcional con JavaScript
- * @version v0.6.0
+ * @version v0.3.1
  * @link https://github.com/andcastillo/functional-light
  * @license MIT
  */
@@ -215,7 +215,7 @@ function filter(l, f) {
   if (isEmpty(l)) {
     return [];
   } else if (f(first(l))) {
-    return cons(deepCopy(first(l)), filter(rest(l), f));
+    return cons(first(l), filter(rest(l), f));
   } else {
     return filter(rest(l), f);
   }
@@ -233,52 +233,9 @@ let map = function map(a, f) {
   if (isEmpty(a)) {
     return [];
   } else {
-    return cons(deepCopy(f(first(a))), map(rest(a), f));
+    return cons(f(first(a)), map(rest(a), f));
   }
 };
-/**
- * Realiza una copia profunda(recursiva) del objeto que se pasa como parámetro
- * @param {object} value 
- * @returns {object}
- * @example deepCopy({a: 10, b: {a: 45}}); // => {a: 10, b: {a: 45}}
- */
-
-
-let deepCopy = function deepCopy(value) {
-  return JSON.parse(JSON.stringify(value));
-};
-/**
- * Aplica una función f a cada elemento de la lista. La función f
- * recibe el elemento de la lista y el índice en el cual se encuentra.
- * El tercer parámetro es un desplazamiento del índice. Por defecto en 0
- * @param {Array} l 
- * @param {function} f 
- * @param {number} offset
- * @example forEach([1, 2, 3], (a, i) => console.log(i + " : " + a));
- */
-
-
-function forEach(l, f) {
-  let index = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-
-  if (!isEmpty(l)) {
-    f(first(l), index);
-    forEach(rest(l), f, index + 1);
-  }
-}
-/**
- * Concatena 2 listas.
- * @param {Array} list1 
- * @param {Array} list2 
- * @returns {Array}
- * @example concat([1, 2], [3, 4]); // [1, 2, 3, 4]
- */
-
-
-function concat(list1, list2) {
-  if (isEmpty(list1)) return list2;
-  return cons(first(list1), concat(rest(list1), list2));
-}
 
 module.exports = {
   cons,
@@ -289,10 +246,7 @@ module.exports = {
   length,
   append,
   filter,
-  map,
-  deepCopy,
-  forEach,
-  concat
+  map
 };
 
 /***/ })

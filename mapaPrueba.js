@@ -1,3 +1,5 @@
+const {cons, first, rest, isEmpty, isList, length, deepCopy} = require('functional-light');
+
 function createMap(processing, mapa, world){
     forEach(mapa, (row, i) => {
         forEach(row, (cell, j) => {
@@ -62,3 +64,12 @@ const mapa=[[5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5],
 
 console.log(mapa[13][9]);
 console.log(mapa[9][12]);
+
+const hola = deepCopy(mapa);
+
+
+const a = {c:10}
+const b = {d:11}
+const g = {f:11}
+
+console.log(Object.assign(a,b,g));

@@ -5,7 +5,8 @@
   //Vamos a usar http://processingjs.org/
   // o https://p5js.org/reference/
   // Importamos las librerias
-  let { append, cons, first, isEmpty, isList, length, rest } = functionalLight;
+  let { append, cons, first, isEmpty, isList, length, rest, deepCopy, concat } = functionalLight;
+  
 
   let pacman1 = null;
   let pacman2 = null;
@@ -76,36 +77,25 @@
 
   }
 
+
+
   //Funciones para movimiento 
 
   
   function movimiento(world){
     const time1 = world.time;
     const animacion = world.pacmanAnimacion;
-    if(animacion < 3){
-                if(world.ejex && world.xMove && (colisionRIGHT(world))) return { time: time1 + 1, pacmanAnimacion: animacion + 1, ejex:false, ejey: false };
-                if(world.ejex && !world.xMove && (colisionLEFT(world))) return  { time: time1 + 1, pacmanAnimacion: animacion + 1, ejex:false, ejey: false};
-                if(world.ejey && world.yMove && (colisionUP(world))) return  { time: time1 + 1, pacmanAnimacion: animacion + 1, ejex:false, ejey: false };
-                if(world.ejey && !world.yMove && (colisionDOWN(world))) return { time: time1 + 1, pacmanAnimacion: animacion + 1, ejex:false, ejey: false};
 
-                if(world.ejex && world.xMove) return {time: time1 + 1, pacmanAnimacion: animacion + 1, pacmanx: world.pacmanx + SIZE, posicionPacmanx: world.posicionPacmanx + 1};
-                if(world.ejex && !world.xMove) return {time: time1 + 1, pacmanAnimacion: animacion + 1, pacmanx: world.pacmanx - SIZE, posicionPacmanx: world.posicionPacmanx - 1};
-                if(world.ejey && world.yMove) return {time: time1 + 1, pacmanAnimacion: animacion + 1, pacmany: world.pacmany - SIZE, posicionPacmany: world.posicionPacmany - 1};
-                if(world.ejey && !world.yMove) return {time: time1 + 1, pacmanAnimacion: animacion + 1, pacmany: world.pacmany + SIZE, posicionPacmany: world.posicionPacmany + 1};
-                if(!world.ejey && !world.ejex) return {time: time1 + 1, pacmanAnimacion: animacion + 1};
-    } else {
-      if(world.ejex && world.xMove && (colisionRIGHT(world))) return { time: time1 + 1, pacmanAnimacion: 1, ejex:false, ejey: false };
-                if(world.ejex && !world.xMove && (colisionLEFT(world))) return  { time: time1 + 1, pacmanAnimacion: 1, ejex:false, ejey: false};
-                if(world.ejey && world.yMove && (colisionUP(world))) return  { time: time1 + 1, pacmanAnimacion: 1, ejex:false, ejey: false };
-                if(world.ejey && !world.yMove && (colisionDOWN(world))) return {time: time1 + 1, pacmanAnimacion: 1, ejex:false, ejey: false};
+      if(world.ejex && world.xMove && (colisionRIGHT(world))) return { ejex:false, ejey: false };
+      if(world.ejex && !world.xMove && (colisionLEFT(world))) return  {  ejex:false, ejey: false};
+      if(world.ejey && world.yMove && (colisionUP(world))) return  {  ejex:false, ejey: false };
+      if(world.ejey && !world.yMove && (colisionDOWN(world))) return {  ejex:false, ejey: false}; 
 
-                if(world.ejex && world.xMove) return {time: time1 + 1, pacmanAnimacion: 1, pacmanx: world.pacmanx + SIZE, posicionPacmanx: world.posicionPacmanx + 1};
-                if(world.ejex && !world.xMove) return {time: time1 + 1, pacmanAnimacion: 1, pacmanx: world.pacmanx - SIZE, posicionPacmanx: world.posicionPacmanx - 1};
-                if(world.ejey && world.yMove) return {time: time1 + 1, pacmanAnimacion: 1, pacmany: world.pacmany - SIZE, posicionPacmany: world.posicionPacmany - 1};
-                if(world.ejey && !world.yMove) return {time: time1 + 1, pacmanAnimacion: 1, pacmany: world.pacmany + SIZE, posicionPacmany: world.posicionPacmany + 1};
-                if(!world.ejey && !world.ejex) return {time: time1 + 1, pacmanAnimacion: 1};
-    }
-
+      if(world.ejex && world.xMove) return { pacmanx: world.pacmanx + SIZE, posicionPacmanx: world.posicionPacmanx + 1};
+      if(world.ejex && !world.xMove) return {pacmanx: world.pacmanx - SIZE, posicionPacmanx: world.posicionPacmanx - 1};
+      if(world.ejey && world.yMove) return { pacmany: world.pacmany - SIZE, posicionPacmany: world.posicionPacmany - 1};
+      if(world.ejey && !world.yMove) return {pacmany: world.pacmany + SIZE, posicionPacmany: world.posicionPacmany + 1};
+      if(!world.ejey && !world.ejex) return {time: time1 + 1, pacmanAnimacion: animacion + 1};
   }
 
   function pintarPacman(processing,world){
@@ -114,18 +104,24 @@
     if (world.pacmanAnimacion == 3) processing.image(pacman3,  world.pacmanx , world.pacmany, 150 , 100);
   }
 
-  function comer(processing,world){
-    activo= true
-    if(mapa[world.posicionPacmany][world.posicionPacmanx] == 0 && activo){
-      activo = false;
-      processing.fill(0, 0, 0);
-      processing.rect(world.posicionPacmanx * SIZE, world.posicionPacmany * SIZE, SIZE, SIZE);
-      pintarPacman(processing,world);
-    } else if(!activo){
-      processing.fill(0, 0, 0);
-      processing.rect(world.posicionPacmanx * SIZE, world.posicionPacmany * SIZE, SIZE, SIZE);
+  function comer(processing, world, mapa){
+    if(mapa[world.posicionPacmany][world.posicionPacmanx] == 0){
+      Object.assign(deepCopy(mapa),mapa[world.posicionPacmany][world.posicionPacmanx] = 5);
+      return {puntos: world.puntos + 1};
     }
   }
+
+  //return make(world, Object.assign(movimiento(world), { time: world.time + 1, pacmanAnimacion: world.pacmanAnimacion + 1, puntos: world.puntos + 1}))
+
+  function reduce(list,t,i){
+    if(isEmpty(list)){
+    return   i;
+  }else{
+    return t(i,reduce(rest(list),t,first(list)));
+    }
+}
+
+
 
   function colisionUP(world){
     if(mapa[world.posicionPacmany - 1][world.posicionPacmanx] == 1) return true;
@@ -194,6 +190,7 @@
       portal = processing.loadImage("images/portal.gif");
       processing.state = { 
         time: 0,
+        puntos: 0,
         pacmanx: 11 * SIZE, 
         pacmany: 8.7 * SIZE,
         posicionPacmanx: 12,
@@ -215,17 +212,18 @@
       //Mapa
       createMap(processing,mapa,world);
 
+      //COMER
+
+
+      comer(processing,world, mapa);
+
       //Pacman
 
      
       pintarPacman(processing,world);
 
 
-
-     //COMER
-
-
-      comer(processing,world);
+      console.log(world.puntos);
     
 
       //Fantasmas
@@ -262,8 +260,16 @@
     /**
      * Cambia la posición del objeto moviendolo 1 unidad a la derecha. 
      */
-    processing.onTic = function (world) {
-      return make(world, movimiento(world));
+    processing.onTic = function (world,processing,mapa) {
+
+      if(world.pacmanAnimacion < 3){
+        return make(world, Object.assign(movimiento(world), { time: world.time + 1, pacmanAnimacion: world.pacmanAnimacion + 1}));
+      } else {
+        return make(world, Object.assign(movimiento(world), { time: world.time + 1, pacmanAnimacion: 1}));
+      }
+
+
+
     }
 
     processing.onKeyEvent = function (world, keyCode) {
