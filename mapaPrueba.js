@@ -46,8 +46,8 @@ function createMap(processing, mapa, world){
   
 
 
-const mapa=[[5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5],
-[5,5,5,1,0,0,0,0,0,0,0,7,1,7,0,0,0,0,0,0,0,1,5,5,5],
+const mapa=[[4,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5],
+[11,5,5,1,0,0,0,0,0,0,0,7,1,7,0,0,0,0,0,0,0,1,5,5,5],
 [1,1,1,1,0,6,1,0,0,0,0,0,1,0,0,0,0,0,1,6,0,1,1,1,1],
 [1,7,0,0,0,1,1,0,1,1,0,0,6,0,0,1,1,0,1,1,0,0,0,7,1],
 [1,0,0,0,0,0,0,0,1,0,0,1,1,1,0,0,1,0,0,0,0,0,0,0,1],
@@ -60,10 +60,11 @@ const mapa=[[5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5],
 [1,0,0,0,1,0,0,0,1,0,0,0,6,0,0,0,1,0,0,0,1,0,0,0,1],
 [1,1,1,1,6,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,6,1,1,1,1],
 [5,5,5,1,0,0,0,0,0,0,0,7,1,7,0,0,0,0,0,0,0,1,5,5,5],
-[5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5]];
+[5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5],
+];
 
-console.log(mapa[13][9]);
-console.log(mapa[9][12]);
+//console.log(mapa[13][9]);
+//console.log(mapa[9][12]);
 
 const hola = deepCopy(mapa);
 
@@ -72,4 +73,21 @@ const a = {c:10}
 const b = {d:11}
 const g = {f:11}
 
-console.log(Object.assign(a,b,g));
+
+
+
+  function acumularPuntos(list, accum){
+    if(isEmpty(list)) {return accum;}
+    if((first(list)) == 5){
+      return acumularPuntos(rest(list), accum + 1) 
+    } else {
+      return acumularPuntos(rest(list), accum);
+    }
+}
+
+function acumuladoTotal(list, accum){
+  if(isEmpty(list)) return accum;
+  return acumularPuntos(first(list),accum) + acumuladoTotal(rest(list),accum);
+}
+
+console.log(acumuladoTotal(mapa, 0 ));
