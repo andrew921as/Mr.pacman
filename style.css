@@ -1,0 +1,87 @@
+@font-face{
+    font-family: "font1";
+    src: url(../Mr.pacman/fonts/Gamer.ttf);
+}
+
+@font-face{
+    font-family: "font2";
+    src: url(../Mr.pacman/fonts/PAC-FONT.TTF);
+}
+
+* {
+    background-color: black;
+}
+
+h2#puntos {
+    font-size: 80px;
+    position: absolute;
+    color: white;
+    font-family: "font1";
+    top: 700px;
+    left: 1000px;
+}
+
+h2#tiempo {
+    font-size: 80px;
+    position: absolute;
+    color: white;
+    font-family: "font1";
+    top: 700px;
+    left: 1300px;
+}
+
+.centrado {
+    background-color: black;
+    width: 100%;
+    height: 100%;
+    margin: 0px auto;
+    text-align: center;
+}
+
+.botones {
+    width: 500px;
+    height: 100px;
+    background-color: gray;
+    color: white;
+    font-size: 80px;
+    font-family: "font1";
+    text-align: center;
+    margin: -500px 0px;
+}
+
+.botones-manuel {
+    width: 500px;
+    height: 100px;
+    background-color: gray;
+    color: white;
+    font-size: 80px;
+    font-family: "font1";
+    text-align: center;
+    margin: 50px 0px;
+}
+
+.titulo {
+    position: relative;
+    margin: 200px 0px;
+    font-family: "font2";
+    font-size: 100px;
+    color: white;
+    text-align: center;
+    animation: cambiar 7s infinite;
+}
+
+.creditos {
+    color: white;
+    font-size: 100px;
+    font-family: "font1";
+}
+
+@keyframes cambiar {
+    0%{color:red}
+    20%{color:yellow}
+    30%{color:green}
+    40% {color: blue;}
+    50% {color: purple;}
+    70% {color: white}
+    100% {color: red}
+}

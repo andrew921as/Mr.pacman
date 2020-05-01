@@ -1,13 +1,21 @@
-<canvas id="canvas" width="400" height="400"></canvas>
+<link rel="stylesheet" href="style.css">
+
+<div class="centrado">
+  <canvas id="canvas" width="400" height="400" tabindex="1"></canvas>
+
+</div>
+<h2 id="puntos"></h2>
+<h2 id="tiempo"></h2>
+
 <script src="web-lib/processing.js"></script>
 <script src="web-lib/functional-light.js"></script>
 <script>
+
   //Vamos a usar http://processingjs.org/
   // o https://p5js.org/reference/
   // Importamos las librerias
   let { append, cons, first, isEmpty, isList, length, rest, deepCopy, concat } = functionalLight;
   
-
   let pacman1 = null;
   let pacman2 = null;
   let pacman3 = null;
@@ -68,6 +76,9 @@
             processing.fill(0, 200, 200);
           } if(cell == 8){
             processing.fill(0, 200, 200);
+          } if(cell == 15){
+              if(world.barrilAnimacion == 1 ) processing.image(explosion1, j * SIZE - 10, i * SIZE - 10)
+              if(world.barrilAnimacion == 2 ) processing.image(explosion2, j * SIZE - 10, i * SIZE - 10)
           }
         } );
       });
@@ -104,13 +115,40 @@
 
   function pintarPacman(processing,world){
 
-    if (world.pacmanAnimacion == 1) processing.image(pacman1, world.pacmanx , world.pacmany, 150 , 100);
-    if (world.pacmanAnimacion == 2) processing.image(pacman2,  world.pacmanx , world.pacmany, 150 , 100);
-    if (world.pacmanAnimacion == 3) processing.image(pacman3,  world.pacmanx , world.pacmany, 150 , 100);
+    if (world.pacmanAnimacion == 1) {
+      if (!world.ejey && !world.ejex) processing.image(pacman1, world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejex && world.xMove) processing.image(pacman1, world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejex && !world.xMove) processing.image(pacman1_left, world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejey && world.yMove) processing.image(pacman1_up, world.pacmanx +5 , world.pacmany -5, 150 , 100);
+      if (world.ejey && !world.yMove) processing.image(pacman1_down, world.pacmanx + 5 , world.pacmany - 5, 150 , 100);
+    }
+
+    if (world.pacmanAnimacion == 2) {
+      if (!world.ejey && !world.ejex) processing.image(pacman2, world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejex && world.xMove) processing.image(pacman2,  world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejex && !world.xMove) processing.image(pacman2_left, world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejey && world.yMove) processing.image(pacman2_up, world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejey && !world.yMove) processing.image(pacman2_down, world.pacmanx , world.pacmany, 150 , 100);
+    }
+    if (world.pacmanAnimacion == 3) {
+      if (!world.ejey && !world.ejex) processing.image(pacman3, world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejex && world.xMove) processing.image(pacman3,  world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejex && !world.xMove) processing.image(pacman3_left, world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejey && world.yMove) processing.image(pacman3_up, world.pacmanx , world.pacmany , 150 , 100);
+      if (world.ejey && !world.yMove) processing.image(pacman3_down, world.pacmanx , world.pacmany , 150 , 100);
+    }
+
 
   }
 
-//COMER
+  function animacionPacman(world){
+    if(world.pacmanAnimacion < 3) return {pacmanAnimacion: world.pacmanAnimacion + 1};
+    return {pacmanAnimacion: 1};
+  }
+
+
+
+  //COMER
 
   function comer(processing, world, mapa){
     if(mapa[world.posicionPacmany][world.posicionPacmanx] == 0){
@@ -124,7 +162,21 @@
     if(mapa[world.posicionPacmany][world.posicionPacmanx] == 6){
       Object.assign(deepCopy(mapa),mapa[world.posicionPacmany][world.posicionPacmanx] = 11);
     }
+
+    if(mapa[world.posicionPacmany][world.posicionPacmanx] == 11){
+      Object.assign(deepCopy(mapa),mapa[world.posicionPacmany][world.posicionPacmanx] = 12);
+    }
+
   }
+
+
+//EXPLOTAR
+
+  function explotar(world){
+      if(world.barrilAnimacion < 5) return {barrilAnimacion: world.barrilAnimacion + 1}
+      return { barrilAnimacion:1}
+  }
+
 
 
 //PUNTOS
@@ -181,7 +233,30 @@
   //FANTASMAS
 
   function pintarFantasmas(processing,world){
-    if (world.time % 2 == 0)
+    if(world.modoComer){
+      if (world.time % 2 == 0)
+        processing.image(ff, world.f1.x  + 5, world.f1.y, 43, 43);
+      else 
+        processing.image(ff_2, world.f1.x + 5 , world.f1.y, 43, 43);
+
+      if (world.time % 2 == 0)
+        processing.image(ff, world.f2.x + 5, world.f2.y, 43, 43);
+      else 
+        processing.image(ff_2, world.f2.x + 5 , world.f2.y, 43, 43);
+
+      if (world.time % 2 == 0)
+        processing.image(ff, world.f3.x + 5 , world.f3.y, 43, 43);
+      else 
+        processing.image(ff_2, world.f3.x  + 5, world.f3.y, 43, 43);
+
+      if (world.time % 2 == 0)
+        processing.image(ff, world.f4.x + 5 , world.f4.y, 43, 43);
+      else 
+        processing.image(ff_2, world.f4.x + 5 , world.f4.y, 43, 43);
+
+    } else {
+
+      if (world.time % 2 == 0)
         processing.image(f1, world.f1.x , world.f1.y, 47, 47);
       else 
         processing.image(f1_2, world.f1.x , world.f1.y, 47, 47);
@@ -200,13 +275,36 @@
         processing.image(f4, world.f4.x , world.f4.y, 50, 50);
       else 
         processing.image(f4_2, world.f4.x , world.f4.y, 50, 50);
+    }
+
+
+
   }
 
 
-  function comerFantasmas(world){
-    if(mapa[world.posicionPacmany][world.posicionPacmanx] == 6) return true;;
+  function comerFantasmasF(world){
+    if(world.modoComer){
+      if(world.comerFantasmas <= 30 && world.comerFantasmas>1){
+        return {comerFantasmas: world.comerFantasmas - 1};
+      } else {
+        return {modoComer: false, comerFantasmas: 30};
+      }
+    }
   }
 
+  function modoComerFantasmas(world){
+    if(mapa[world.posicionPacmany][world.posicionPacmanx] == 11){
+      return {modoComer: true};
+    }
+  }
+
+
+
+  //TIEMPO
+
+  function tiempoReal(world){
+    if(world.time%6 == 0) return {time_real: world.time_real + 1};
+  }
 
 
   /**
@@ -214,7 +312,7 @@
    * No requiere interacción con el usuario
    */
   const WIDTH = 1250;
-  const HEIGHT = 900;
+  const HEIGHT = 750;
   const SIZE = 50;
   const mapa=[[5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5],
               [5,5,5,1,0,0,0,0,0,0,0,7,1,7,0,0,0,0,0,0,0,1,5,5,5],
@@ -240,6 +338,8 @@
       processing.frameRate(6);
       processing.size(WIDTH, HEIGHT);
       barriles = processing.loadImage('images/barriles2.2.png');
+      explosion1 = processing.loadImage('images/explosion1.png');
+      explosion2 = processing.loadImage('images/explosion2.png');
       f1 = processing.loadImage('images/f1.png');
       f1_2 = processing.loadImage('images/f1-2.png');
       f2 = processing.loadImage('images/f2.png');
@@ -248,18 +348,37 @@
       f3_2 = processing.loadImage('images/f3-2.png');
       f4 = processing.loadImage('images/f4.png');
       f4_2 = processing.loadImage('images/f4-2.png');
+      ff = processing.loadImage('images/ff.png');
+      ff_2 = processing.loadImage('images/ff-2.png');
       pacman1 = processing.loadImage('images/pacman1.png');
+      pacman1_left = processing.loadImage('images/pacman1_left.png');
+      pacman1_down = processing.loadImage('images/pacman1_down.png');
+      pacman1_up = processing.loadImage('images/pacman1_up.png');
       pacman2 = processing.loadImage('images/pacman2.png');
+      pacman2_left = processing.loadImage('images/pacman2_left.png');
+      pacman2_down = processing.loadImage('images/pacman2_down.png');
+      pacman2_up = processing.loadImage('images/pacman2_up.png');
       pacman3 = processing.loadImage('images/pacman3.png');
+      pacman3_left = processing.loadImage('images/pacman3_left.png');
+      pacman3_down = processing.loadImage('images/pacman3_down.png');
+      pacman3_up = processing.loadImage('images/pacman3_up.png');
       portal = processing.loadImage("images/portal.gif");
+      //fonts
+      font1 = processing.createFont("fonts/Gamer.tff")
+
       processing.state = { 
         time: 0,
+        time_real: 0,
         puntos: 0,
         pacmanx: 11 * SIZE, 
         pacmany: 8.7 * SIZE,
         posicionPacmanx: 12,
         posicionPacmany: 9, 
         pacmanAnimacion: 1,
+        modoComer: false,
+        comerFantasmas: 30,
+        barrilExplosion: true,
+        barrilAnimacion: 1,
         comerPacman : false,
         f1: { x: 13 * SIZE + 2, y: 7 * SIZE + 2 },
         f2: { x: 12 * SIZE, y: 6 * SIZE },
@@ -275,30 +394,34 @@
       };
     }
     // Dibuja algo en el canvas. Aqui se pone todo lo que quieras pintar
+
+
     processing.drawGame = function (world) {
       processing.background(0, 0, 0);
       //Mapa
       createMap(processing,mapa,world);
 
+
       //COMER
 
-
       comer(processing,world, mapa);
-
-
-      console.log(acumuladoTotal(mapa, 0))
     
       //Fantasmas
 
       pintarFantasmas(processing,world);
 
+      console.log(world.comerFantasmas);
+      console.log(world.modoComer);
+
+      //console.log(world.comerFantasmas)
       //Pacman
    
+      document.getElementById("puntos").innerHTML = acumuladoTotal(mapa,0);
+
+      document.getElementById("tiempo").innerHTML = world.time_real;
+
+  
       pintarPacman(processing,world);
-      
-
-
-
 
       //processing.image(pacman2,  0,0);
 
@@ -310,19 +433,12 @@
 
     }
 
-    /**
-     * Cambia la posición del objeto moviendolo 1 unidad a la derecha. 
-     */
     processing.onTic = function (world) {
-        if(world.pacmanAnimacion < 3){
-          return make(world, Object.assign(movimiento(world), { time: world.time + 1, pacmanAnimacion: world.pacmanAnimacion + 1}));
-        } else {
-          return make(world, Object.assign(movimiento(world), { time: world.time + 1, pacmanAnimacion: 1}));
-        }
-
-
-
+       return make(world, Object.assign(movimiento(world), { time: world.time + 1}, tiempoReal(world),animacionPacman(world),explotar(world), modoComerFantasmas(world), comerFantasmasF(world)));
     }
+
+
+
 
     processing.onKeyEvent = function (world, keyCode) {
       switch (keyCode) {
@@ -391,6 +507,10 @@
     // Fin de los eventos del mouse
   }
   var canvas = document.getElementById("canvas");
+  document.getElementById("canvas").focus();
   // Adjuntamos nuestro sketch al framework de processing
   var processingInstance = new Processing(canvas, sketchProc);
 </script>
+
+
+
