@@ -138,12 +138,36 @@
       if (world.ejey && !world.yMove) processing.image(pacman3_down, world.pacmanx , world.pacmany , 150 , 100);
     }
 
+    if (world.pacmanAnimacion == 4) {
+      if (!world.ejey && !world.ejex) processing.image(pacman2, world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejex && world.xMove) processing.image(pacman2,  world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejex && !world.xMove) processing.image(pacman2_left, world.pacmanx , world.pacmany, 150 , 100);
+      if (world.ejey && world.yMove) processing.image(pacman2_up, world.pacmanx , world.pacmany , 150 , 100);
+      if (world.ejey && !world.yMove) processing.image(pacman2_down, world.pacmanx , world.pacmany , 150 , 100);
+    }
+
 
   }
 
   function animacionPacman(world){
-    if(world.pacmanAnimacion < 3) return {pacmanAnimacion: world.pacmanAnimacion + 1};
+    if(world.pacmanAnimacion < 4) return {pacmanAnimacion: world.pacmanAnimacion + 1};
     return {pacmanAnimacion: 1};
+  }
+
+//VIDAS
+  function vidasPacman(world){
+    if((world.f1.posiciony == world.posicionPacmany) && (world.f1.posicionx == world.posicionPacmanx)){
+      return {vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9};
+    }
+    if((world.f2.posiciony == world.posicionPacmany) && (world.f2.posicionx == world.posicionPacmanx)){
+      return {vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9};
+    }
+    if((world.f3.posiciony == world.posicionPacmany) && (world.f3.posicionx == world.posicionPacmanx)){
+      return {vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9};
+    }
+    if((world.f4.posiciony == world.posicionPacmany) && (world.f4.posicionx == world.posicionPacmanx)){
+      return {vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9};
+    }
   }
 
 
@@ -312,7 +336,7 @@
    * No requiere interacción con el usuario
    */
   const WIDTH = 1250;
-  const HEIGHT = 750;
+  const HEIGHT = 900;
   const SIZE = 50;
   const mapa=[[5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5],
               [5,5,5,1,0,0,0,0,0,0,0,7,1,7,0,0,0,0,0,0,0,1,5,5,5],
@@ -362,14 +386,19 @@
       pacman3_left = processing.loadImage('images/pacman3_left.png');
       pacman3_down = processing.loadImage('images/pacman3_down.png');
       pacman3_up = processing.loadImage('images/pacman3_up.png');
+      vidaPacmanImg = processing.loadImage('images/vidaPacman.png');
       portal = processing.loadImage("images/portal.gif");
       //fonts
-      font1 = processing.createFont("fonts/Gamer.tff")
+      MyFont = processing.createFont("font1");
+      //processing.textFont(processing.createFont(font1,32));
+      //processing.textFont(processing.createFont("Gamer.tff",32));
+      
 
       processing.state = { 
         time: 0,
         time_real: 0,
         puntos: 0,
+        vidaPacman: 3,
         pacmanx: 11 * SIZE, 
         pacmany: 8.7 * SIZE,
         posicionPacmanx: 12,
@@ -380,10 +409,10 @@
         barrilExplosion: true,
         barrilAnimacion: 1,
         comerPacman : false,
-        f1: { x: 13 * SIZE + 2, y: 7 * SIZE + 2 },
-        f2: { x: 12 * SIZE, y: 6 * SIZE },
-        f3: { x: 12 * SIZE, y: 7 * SIZE },
-        f4: { x: 11 * SIZE, y: 7 * SIZE },
+        f1: { x: 13 * SIZE + 2, y: 7 * SIZE + 2 , posicionx: 13, posiciony: 7 },
+        f2: { x: 12 * SIZE, y: 6 * SIZE, posicionx: 12, posiciony: 6 },
+        f3: { x: 12 * SIZE, y: 7 * SIZE, posicionx: 12, posiciony: 7 },
+        f4: { x: 11 * SIZE, y: 7 * SIZE, posicionx: 11, posiciony: 7 },
         timeFantasmas: 0,
         ejex: false,
         ejey: false,
@@ -416,13 +445,91 @@
       //console.log(world.comerFantasmas)
       //Pacman
    
-      document.getElementById("puntos").innerHTML = acumuladoTotal(mapa,0);
+      //document.getElementById("puntos").innerHTML = acumuladoTotal(mapa,0);
 
-      document.getElementById("tiempo").innerHTML = world.time_real;
+      //document.getElementById("tiempo").innerHTML = world.time_real;
 
+
+      processing.textFont(MyFont);
+      processing.fill(255,255,255);
+      processing.textSize(80);
+      processing.text("PUNTOS : " + acumuladoTotal(mapa,0),800,870);
+      processing.text("TIEMPO : " + world.time_real,800,820);
+
+      
+      
   
       pintarPacman(processing,world);
+    if(world.vidaPacman == 3){
+      if(world.pacmanAnimacion == 1){
+        processing.image(vidaPacmanImg, 100  ,755,140,140);
+        processing.image(vidaPacmanImg, 170 ,765,140,140);
+        processing.image(vidaPacmanImg, 240,755,140,140);
+      } 
+      if (world.pacmanAnimacion == 2){
+        processing.image(vidaPacmanImg, 100  ,760,140,140);
+        processing.image(vidaPacmanImg, 170 ,760,140,140);
+        processing.image(vidaPacmanImg, 240,760,140,140);
+      }
 
+      if (world.pacmanAnimacion == 3){
+        processing.image(vidaPacmanImg, 100  ,765,140,140);
+        processing.image(vidaPacmanImg, 170 ,755,140,140);
+        processing.image(vidaPacmanImg, 240,765,140,140);
+      }
+
+      if (world.pacmanAnimacion == 4){
+        processing.image(vidaPacmanImg, 100  ,760,140,140);
+        processing.image(vidaPacmanImg, 170 ,760,140,140);
+        processing.image(vidaPacmanImg, 240,760,140,140);
+      }
+    }
+
+
+      if(world.vidaPacman == 2){
+      if(world.pacmanAnimacion == 1){
+        processing.image(vidaPacmanImg, 100  ,755,140,140);
+        processing.image(vidaPacmanImg, 170 ,765,140,140);
+
+      } 
+      if (world.pacmanAnimacion == 2){
+        processing.image(vidaPacmanImg, 100  ,760,140,140);
+        processing.image(vidaPacmanImg, 170 ,760,140,140);
+
+      }
+
+      if (world.pacmanAnimacion == 3){
+        processing.image(vidaPacmanImg, 100  ,765,140,140);
+        processing.image(vidaPacmanImg, 170 ,755,140,140);
+
+      }
+
+      if (world.pacmanAnimacion == 4){
+        processing.image(vidaPacmanImg, 100  ,760,140,140);
+        processing.image(vidaPacmanImg, 170 ,760,140,140);
+
+      }
+    }
+    if(world.vidaPacman == 1){
+          if(world.pacmanAnimacion == 1){
+            processing.image(vidaPacmanImg, 100  ,755,140,140);
+
+          } 
+          if (world.pacmanAnimacion == 2){
+            processing.image(vidaPacmanImg, 100  ,760,140,140);
+
+          }
+
+          if (world.pacmanAnimacion == 3){
+            processing.image(vidaPacmanImg, 100  ,765,140,140);
+
+          }
+
+          if (world.pacmanAnimacion == 4){
+            processing.image(vidaPacmanImg, 100  ,760,140,140);
+
+          }
+      }
       //processing.image(pacman2,  0,0);
 
       //processing.image(f1, 13 * SIZE + 2 , 7 * SIZE + 2, 48, 48);
@@ -434,7 +541,7 @@
     }
 
     processing.onTic = function (world) {
-       return make(world, Object.assign(movimiento(world), { time: world.time + 1}, tiempoReal(world),animacionPacman(world),explotar(world), modoComerFantasmas(world), comerFantasmasF(world)));
+       return make(world, Object.assign(movimiento(world), { time: world.time + 1}, tiempoReal(world),animacionPacman(world),explotar(world), modoComerFantasmas(world), comerFantasmasF(world), vidasPacman(world)));
     }
 
 
