@@ -77,8 +77,8 @@
           } if(cell == 8){
             processing.fill(0, 200, 200);
           } if(cell == 15){
-              if(world.barrilAnimacion == 1 ) processing.image(explosion1, j * SIZE - 10, i * SIZE - 10)
-              if(world.barrilAnimacion == 2 ) processing.image(explosion2, j * SIZE - 10, i * SIZE - 10)
+              if(world.barrilAnimacion == 3 ) processing.image(explosion1, j * SIZE - 10, i * SIZE - 10)
+              if(world.barrilAnimacion == 4 ) processing.image(explosion2, j * SIZE - 10, i * SIZE - 10)
           } if(world.modoComer && world.comerFantasmas == 1 && cell == 11){
                   Object.assign(deepCopy(mapa),mapa[i][j] = 12);
           }
@@ -506,7 +506,7 @@
     }
 
       //Condicionales para poner en pantalla las vidas al pacman
-      
+
       if(world.vidaPacman == 2){
       if(world.pacmanAnimacion == 1){
         processing.image(vidaPacmanImg, 100  ,755,140,140);
