@@ -469,7 +469,7 @@
 
       //document.getElementById("tiempo").innerHTML = world.time_real;
 
-
+      // Texto de puntos y tiempo 
       processing.textFont(MyFont);
       processing.fill(255,255,255);
       processing.textSize(80);
@@ -505,7 +505,8 @@
       }
     }
 
-
+      //Condicionales para poner en pantalla las vidas al pacman
+      
       if(world.vidaPacman == 2){
       if(world.pacmanAnimacion == 1){
         processing.image(vidaPacmanImg, 100  ,755,140,140);

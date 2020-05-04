@@ -1,11 +1,11 @@
 @font-face{
     font-family: "font1";
-    src: url(../Mr.pacman/fonts/Gamer.ttf);
+    src: url(fonts/Gamer.ttf);
 }
 
 @font-face{
     font-family: "font2";
-    src: url(../Mr.pacman/fonts/PAC-FONT.TTF);
+    src: url(fonts/PAC-FONT.TTF);
 }
 
 * {
