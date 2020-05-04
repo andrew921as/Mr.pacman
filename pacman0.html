@@ -79,6 +79,8 @@
           } if(cell == 15){
               if(world.barrilAnimacion == 1 ) processing.image(explosion1, j * SIZE - 10, i * SIZE - 10)
               if(world.barrilAnimacion == 2 ) processing.image(explosion2, j * SIZE - 10, i * SIZE - 10)
+          } if(world.modoComer && world.comerFantasmas == 1 && cell == 11){
+                  Object.assign(deepCopy(mapa),mapa[i][j] = 12);
           }
         } );
       });
@@ -114,39 +116,38 @@
   //PACMAN
 
   function pintarPacman(processing,world){
+    if(world.pintPacman){
+      if (world.pacmanAnimacion == 1) {
+        if (!world.ejey && !world.ejex) processing.image(pacman1, world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejex && world.xMove) processing.image(pacman1, world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejex && !world.xMove) processing.image(pacman1_left, world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejey && world.yMove) processing.image(pacman1_up, world.pacmanx +5 , world.pacmany -5, 150 , 100);
+        if (world.ejey && !world.yMove) processing.image(pacman1_down, world.pacmanx + 5 , world.pacmany - 5, 150 , 100);
+      }
 
-    if (world.pacmanAnimacion == 1) {
-      if (!world.ejey && !world.ejex) processing.image(pacman1, world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejex && world.xMove) processing.image(pacman1, world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejex && !world.xMove) processing.image(pacman1_left, world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejey && world.yMove) processing.image(pacman1_up, world.pacmanx +5 , world.pacmany -5, 150 , 100);
-      if (world.ejey && !world.yMove) processing.image(pacman1_down, world.pacmanx + 5 , world.pacmany - 5, 150 , 100);
-    }
+      if (world.pacmanAnimacion == 2) {
+        if (!world.ejey && !world.ejex) processing.image(pacman2, world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejex && world.xMove) processing.image(pacman2,  world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejex && !world.xMove) processing.image(pacman2_left, world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejey && world.yMove) processing.image(pacman2_up, world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejey && !world.yMove) processing.image(pacman2_down, world.pacmanx , world.pacmany, 150 , 100);
+      }
+      if (world.pacmanAnimacion == 3) {
+        if (!world.ejey && !world.ejex) processing.image(pacman3, world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejex && world.xMove) processing.image(pacman3,  world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejex && !world.xMove) processing.image(pacman3_left, world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejey && world.yMove) processing.image(pacman3_up, world.pacmanx , world.pacmany , 150 , 100);
+        if (world.ejey && !world.yMove) processing.image(pacman3_down, world.pacmanx , world.pacmany , 150 , 100);
+      }
 
-    if (world.pacmanAnimacion == 2) {
-      if (!world.ejey && !world.ejex) processing.image(pacman2, world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejex && world.xMove) processing.image(pacman2,  world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejex && !world.xMove) processing.image(pacman2_left, world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejey && world.yMove) processing.image(pacman2_up, world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejey && !world.yMove) processing.image(pacman2_down, world.pacmanx , world.pacmany, 150 , 100);
-    }
-    if (world.pacmanAnimacion == 3) {
-      if (!world.ejey && !world.ejex) processing.image(pacman3, world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejex && world.xMove) processing.image(pacman3,  world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejex && !world.xMove) processing.image(pacman3_left, world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejey && world.yMove) processing.image(pacman3_up, world.pacmanx , world.pacmany , 150 , 100);
-      if (world.ejey && !world.yMove) processing.image(pacman3_down, world.pacmanx , world.pacmany , 150 , 100);
-    }
-
-    if (world.pacmanAnimacion == 4) {
-      if (!world.ejey && !world.ejex) processing.image(pacman2, world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejex && world.xMove) processing.image(pacman2,  world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejex && !world.xMove) processing.image(pacman2_left, world.pacmanx , world.pacmany, 150 , 100);
-      if (world.ejey && world.yMove) processing.image(pacman2_up, world.pacmanx , world.pacmany , 150 , 100);
-      if (world.ejey && !world.yMove) processing.image(pacman2_down, world.pacmanx , world.pacmany , 150 , 100);
-    }
-
-
+      if (world.pacmanAnimacion == 4) {
+        if (!world.ejey && !world.ejex) processing.image(pacman2, world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejex && world.xMove) processing.image(pacman2,  world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejex && !world.xMove) processing.image(pacman2_left, world.pacmanx , world.pacmany, 150 , 100);
+        if (world.ejey && world.yMove) processing.image(pacman2_up, world.pacmanx , world.pacmany , 150 , 100);
+        if (world.ejey && !world.yMove) processing.image(pacman2_down, world.pacmanx , world.pacmany , 150 , 100);
+      }
+   }
   }
 
   function animacionPacman(world){
@@ -157,16 +158,33 @@
 //VIDAS
   function vidasPacman(world){
     if((world.f1.posiciony == world.posicionPacmany) && (world.f1.posicionx == world.posicionPacmanx)){
-      return {vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9};
+      if(world.gameOver>0){
+        return {gameOver: world.gameOver -1 , pintPacman: false};
+      } else {
+        return {pintPacman: true, gameOver: 12, vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9}
+      }
+      
     }
     if((world.f2.posiciony == world.posicionPacmany) && (world.f2.posicionx == world.posicionPacmanx)){
-      return {vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9};
+      if(world.gameOver>0){
+        return {gameOver: world.gameOver -1 , pintPacman: false};
+      } else {
+        return {pintPacman: true, gameOver: 12, vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9}
+      }
     }
     if((world.f3.posiciony == world.posicionPacmany) && (world.f3.posicionx == world.posicionPacmanx)){
-      return {vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9};
+      if(world.gameOver>0){
+        return {gameOver: world.gameOver -1 , pintPacman: false};
+      } else {
+        return {pintPacman: true, gameOver: 12, vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9}
+      }
     }
     if((world.f4.posiciony == world.posicionPacmany) && (world.f4.posicionx == world.posicionPacmanx)){
-      return {vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9};
+      if(world.gameOver>0){
+        return {gameOver: world.gameOver -1 , pintPacman: false};
+      } else {
+        return {pintPacman: true, gameOver: 12, vidaPacman: world.vidaPacman - 1, pacmanx: 11 * SIZE, pacmany: 11 * SIZE, pacmany: 8.7 * SIZE, posicionPacmanx: 12, posicionPacmany: 9}
+      }
     }
   }
 
@@ -187,9 +205,6 @@
       Object.assign(deepCopy(mapa),mapa[world.posicionPacmany][world.posicionPacmanx] = 11);
     }
 
-    if(mapa[world.posicionPacmany][world.posicionPacmanx] == 11){
-      Object.assign(deepCopy(mapa),mapa[world.posicionPacmany][world.posicionPacmanx] = 12);
-    }
 
   }
 
@@ -390,6 +405,9 @@
       portal = processing.loadImage("images/portal.gif");
       //fonts
       MyFont = processing.createFont("font1");
+      s = processing.second(); 
+      m = processing.minute(); 
+      h = processing.hour(); 
       //processing.textFont(processing.createFont(font1,32));
       //processing.textFont(processing.createFont("Gamer.tff",32));
       
@@ -399,6 +417,8 @@
         time_real: 0,
         puntos: 0,
         vidaPacman: 3,
+        gameOver: 12,
+        pintPacman: true,
         pacmanx: 11 * SIZE, 
         pacmany: 8.7 * SIZE,
         posicionPacmanx: 12,
@@ -439,8 +459,8 @@
 
       pintarFantasmas(processing,world);
 
-      console.log(world.comerFantasmas);
-      console.log(world.modoComer);
+      //console.log(world.comerFantasmas);
+      //console.log(world.modoComer);
 
       //console.log(world.comerFantasmas)
       //Pacman
@@ -456,7 +476,7 @@
       processing.text("PUNTOS : " + acumuladoTotal(mapa,0),800,870);
       processing.text("TIEMPO : " + world.time_real,800,820);
 
-      
+      console.log(world.gameOver)
       
   
       pintarPacman(processing,world);
