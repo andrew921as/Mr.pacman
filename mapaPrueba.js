@@ -90,4 +90,10 @@ function acumuladoTotal(list, accum){
   return acumularPuntos(first(list),accum) + acumuladoTotal(rest(list),accum);
 }
 
-console.log(acumuladoTotal(mapa, 0 ));
+//console.log(acumuladoTotal(mapa, 0 ));
+
+console.log(Math.round(Math.random() * (2 - 0)) + 0)
+
+//console.log(Math.round(2.6))
+
+
