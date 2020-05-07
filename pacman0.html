@@ -92,7 +92,7 @@
                 if(world.barrilAnimacion == 2 ) processing.image(explosion2, j * SIZE - 10, i * SIZE - 10)
                 if(world.barrilAnimacion == 4 ) processing.image(explosion1, j * SIZE - 10, i * SIZE - 10)
               } else {
-                Object.assign(deepCopy(mapa),mapa[i][j] = 12);
+                Object.assign(deepCopy(mapa),mapa[i][j] = 13);
               }
 
           } if(world.modoComer && world.comerFantasmas == 1 && cell == 11){
@@ -115,8 +115,8 @@
     if(world.pintPacman){
 
 
-      if(teletransportarLEFT(world)) return {pacman:{pacmany: world.pacman.pacmany, y: world.pacman.y ,x: 1, pacmanx: 0 * SIZE }}
-      if(teletransportarRIGHT(world)) return {pacman:{pacmany: world.pacman.pacmany, y: world.pacman.y, x: 23, pacmanx: 22 * SIZE }}
+      if(teletransportarLEFT(world,world.pacman)) return {pacman:{pacmany: world.pacman.pacmany, y: world.pacman.y ,x: 1, pacmanx: 0 * SIZE }}
+      if(teletransportarRIGHT(world,world.pacman)) return {pacman:{pacmany: world.pacman.pacmany, y: world.pacman.y, x: 23, pacmanx: 22 * SIZE }}
       if(world.ejex && world.xMove && (colisionRIGHT(world,world.pacman))) return { ejex:false, ejey: false };
       if(world.ejex && !world.xMove && (colisionLEFT(world,world.pacman))) return  {  ejex:false, ejey: false};
       if(world.ejey && world.yMove && (colisionUP(world, world.pacman))) return  {  ejex:false, ejey: false };
@@ -183,6 +183,7 @@
 
 //VIDAS
   function vidasPacman(world){
+    if(!world.modoComer){
     if((world.f1.y == world.pacman.y) && (world.f1.x == world.pacman.x)){
       if(world.gameOver>0){
         return {gameOver: world.gameOver -1 , pintPacman: false};
@@ -212,6 +213,7 @@
         return {pintPacman: true, gameOver: 12, vidaPacman: world.vidaPacman - 1, pacman:{pacmanx: 11 * SIZE, pacmany: 8.7 * SIZE, x: 12, y: 9}}
       }
     }
+   }
   }
 
 
@@ -229,6 +231,10 @@
 
     if(mapa[world.pacman.y][world.pacman.x] == 6){
       Object.assign(deepCopy(mapa),mapa[world.pacman.y][world.pacman.x] = 11);
+    }
+
+    if(world.timeFantasmas == 60){
+      Object.assign(deepCopy(mapa),mapa[6][12] = 1);
     }
 
 
@@ -265,51 +271,80 @@
 
 //PUNTOS
 
-  function acumularPuntos(list, accum){
-    if(isEmpty(list)) {return accum;}
-    if((first(list)) == 2){
-        return acumularPuntos(rest(list), accum + 10) 
-    } else if(first(list) == 15){
-        return acumularPuntos(rest(list), accum + 500) 
-    } else {
-        return acumularPuntos(rest(list), accum);
+  function puntosFantasmasF(world){
+    if(world.pacman.x == world.f1.x && world.pacman.y == world.f1.y && world.modoComer){
+        return {puntosFantasmas: world.puntosFantasmas + 200};
+    } else if(world.pacman.x == world.f2.x && world.pacman.y == world.f2.y && world.modoComer){
+        return {puntosFantasmas: world.puntosFantasmas + 200};
+    }else if(world.pacman.x == world.f3.x && world.pacman.y == world.f3.y && world.modoComer){
+        return {puntosFantasmas: world.puntosFantasmas + 200};
+    }else if(world.pacman.x == world.f4.x && world.pacman.y == world.f4.y && world.modoComer){
+        return {puntosFantasmas: world.puntosFantasmas + 200};
     }
   }
 
-  function acumuladoTotal(list, accum){
-    if(isEmpty(list)) return accum;
-    return acumularPuntos(first(list),accum) + acumuladoTotal(rest(list),accum);
+  function acumularPuntos(list, accum, world){
+    if(isEmpty(list)) {return accum;}
+    if((first(list)) == 2){
+        return acumularPuntos(rest(list), accum + 10, world) 
+    } else if(first(list) == 15){
+        return acumularPuntos(rest(list), accum + 500, world) 
+    } else if(first(list) == 13){
+        return acumularPuntos(rest(list), accum + 500, world) 
+    } else  {
+        return acumularPuntos(rest(list), accum, world );
+    }
   }
+
+  function acumuladoTotal(list, accum, world){
+    if(isEmpty(list)) return accum + world.puntosFantasmas;
+    return acumularPuntos(first(list),accum,world) + acumuladoTotal(rest(list),accum,world);
+  }
+
+  function ganar(list, accum, world){
+      if(isEmpty(list)) {return accum;}
+      if((first(list)) == 0){
+          return ganar(rest(list), accum + 1, world); 
+      } else  {
+          return ganar(rest(list), accum, world );
+      }
+   }
+
+   function acumuladoTotalGanar(list, accum, world){
+    if(isEmpty(list)) return accum;
+    return ganar(first(list),accum,world) + acumuladoTotalGanar(rest(list),accum,world);
+  }
+
 
 //COLISIONES
 
   function colisionUP(world,pos){
-    if(world.mapa[pos.y - 1][pos.x] == 1) return true;
+    if(world.mapa[pos.y - 1][pos.x] == 1 || world.mapa[pos.y - 1][pos.x] == 19) return true;
     return false;
   }
 
   function colisionDOWN(world, pos){
-    if(world.mapa[pos.y + 1][pos.x] == 1) return true;
+    if(world.mapa[pos.y + 1][pos.x] == 1  || world.mapa[pos.y - 1][pos.x] == 19) return true;
     return false;
   }
 
   function colisionRIGHT(world, pos){
-    if(world.mapa[pos.y][pos.x + 1] == 1) return true;
+    if(world.mapa[pos.y][pos.x + 1] == 1 || world.mapa[pos.y - 1][pos.x] == 19) return true;
     return false;
   }
 
   function colisionLEFT(world, pos){
-    if(world.mapa[pos.y][pos.x - 1] == 1) return true;
+    if(world.mapa[pos.y][pos.x - 1] == 1 || world.mapa[pos.y - 1][pos.x] == 19) return true;
     return false;
   }
 
-  function teletransportarRIGHT(world){
-    if(world.mapa[world.pacman.y][world.pacman.x] == 4 ) return true;
+  function teletransportarRIGHT(world, pos){
+    if(world.mapa[pos.y][pos.x] == 4 ) return true;
     return false;
   }
 
-  function teletransportarLEFT(world){
-    if(world.mapa[world.pacman.y][world.pacman.x] == 10 ) return true;
+  function teletransportarLEFT(world, pos){
+    if(world.mapa[pos.y][pos.x] == 10 ) return true;
     return false;
   }
 
@@ -368,35 +403,315 @@
 
   //MOVIMIENTO FANTASMAS
 
-  function movimientoFantasma(world,fantasma){
-    if(fantasma.dir){
-      return {fantasma:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE , x:  fantasma.x, y:  fantasma.y, xa:  fantasma.xa, ya:  fantasma.ya, dir: true}}
-    }
+
+
+function distanciaEuclidiana(x1,y1,x2,y2){
+  return Math.sqrt((Math.pow((x2-x1),2))+(Math.pow((y2-y1),2)));
+}
+
+
+function inicioFantasmasTime(world){
+  if(world.pintPacman && (world.timeFantasmas > 0)){
+    return {timeFantasmas: world.timeFantasmas -1};
+  } else if(!world.pintPacman){
+    return {timeFantasmas: 60};
   }
+}
+
+function inicioFantasmas(world){
+  if(world.timeFantasmas == 50) return {f2: { fantx: 12 * SIZE + 2, fanty: 5 * SIZE + 2 , x: 12, y: 5, xa: 0, ya: 0, dir: "none"}};
+  if(world.timeFantasmas == 30) return {f3: { fantx: 12 * SIZE + 2, fanty: 5 * SIZE + 2 , x: 12, y: 5, xa: 0, ya: 0, dir: "none"}};
+  if(world.timeFantasmas == 10) return {f4: { fantx: 12 * SIZE + 2, fanty: 5 * SIZE + 2 , x: 12, y: 5, xa: 0, ya: 0, dir: "none"}};
+  if(world.timeFantasmas == 1) return {f1: { fantx: 12 * SIZE + 2, fanty: 5 * SIZE + 2 , x: 12, y: 5, xa: 0, ya: 0, dir: "none"}};
+}
+
+
+function teletransporteFantasmas(world){
+  if(teletransportarLEFT(world,world.f1)){
+    return {f1:{fantx: 1 * SIZE + 2, fanty: world.f1.fanty, x: 1, y: world.f1.y, xa: world.f1.x, ya: world.f1.y, dir: "none"}};
+  }
+
+  if(teletransportarRIGHT(world,world.f1)){
+    return {f1:{fantx: 23 * SIZE + 2, fanty: world.f1.fanty, x: 23, y: world.f1.y, xa: world.f1.x, ya: world.f1.y, dir: "none"}};
+  }
+
+  if(teletransportarLEFT(world,world.f2)){
+    return {f2:{fantx: 1 * SIZE + 2, fanty: world.f2.fanty, x: 1, y: world.f2.y, xa: world.f2.x, ya: world.f2.y, dir: "none"}};
+  }
+
+  if(teletransportarRIGHT(world,world.f2)){
+    return {f2:{fantx: 23 * SIZE + 2, fanty: world.f2.fanty, x: 23, y: world.f2.y, xa: world.f2.x, ya: world.f2.y, dir: "none"}};
+  }
+
+  if(teletransportarLEFT(world,world.f3)){
+    return {f3:{fantx: 1 * SIZE + 2, fanty: world.f3.fanty, x: 1, y: world.f3.y, xa: world.f3.x, ya: world.f3.y, dir: "none"}};
+  }
+
+  if(teletransportarRIGHT(world,world.f3)){
+    return {f3:{fantx: 23 * SIZE + 2, fanty: world.f3.fanty, x: 23, y: world.f3.y, xa: world.f3.x, ya: world.f3.y, dir: "none"}};
+  }
+
+  if(teletransportarLEFT(world,world.f4)){
+    return {f4:{fantx: 1 * SIZE + 2, fanty: world.f4.fanty, x: 1, y: world.f4.y, xa: world.f4.x, ya: world.f4.y, dir: "none"}};
+  }
+
+  if(teletransportarRIGHT(world,world.f4)){
+    return {f4:{fantx: 23 * SIZE + 2, fanty: world.f4.fanty, x: 23, y: world.f4.y, xa: world.f4.x, ya: world.f4.y, dir: "none"}};
+  }
+}
+
+
+
+
+function fantasmasIA(world,fantasma,pacmancito){
   let random = Math.round(Math.random() * (3 - 0)) + 0;
-  function direccionFantasma(world,fantasma){
-  
+  const disUP = distanciaEuclidiana(fantasma.x,fantasma.y - 1, pacmancito.x + random , pacmancito.y + random );
+  const disDOWN = distanciaEuclidiana(fantasma.x,fantasma.y + 1, pacmancito.x - random , pacmancito.y - random);
+  const disRIGHT = distanciaEuclidiana(fantasma.x + 1 ,fantasma.y, pacmancito.x + random, pacmancito.y - random);
+  const disLEFT = distanciaEuclidiana(fantasma.x - 1,fantasma.y, pacmancito.x, pacmancito.y);
 
-    if(random == 0 ){
-      return {fantasma:{fantx: fantasma.fantx, fanty: fantasma.fanty  , x: fantasma.x, y: fantasma.y, xa: fantasma.xa, ya: fantasma.ya, dir: "up"}}
+ if(!world.modoComer){ 
+  if(world.pintPacman){
+
+    if(world.time%2 == 0){
+
+    if(!colisionUP(world,fantasma) && disUP == Math.min(disUP,disDOWN,disRIGHT,disLEFT) && (fantasma.y-1 !== fantasma.ya)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+
+        } else if(!colisionDOWN(world,fantasma) && disDOWN == Math.min(disDOWN,disRIGHT,disLEFT) && (fantasma.y+1 !== fantasma.ya)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+
+        } else if(!colisionRIGHT(world,fantasma) && disRIGHT == Math.min(disRIGHT,disLEFT) && (fantasma.x+1 !== fantasma.xa)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+
+        } else if(!colisionLEFT(world,fantasma) && (fantasma.x-1 !== fantasma.xa)) {
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+    if(!colisionDOWN(world,fantasma) && disDOWN == Math.min(disUP,disDOWN,disRIGHT,disLEFT) && (fantasma.y+1 !== fantasma.ya)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        } else if(!colisionUP(world,fantasma) && disUP == Math.min(disUP,disRIGHT,disLEFT) && (fantasma.y-1 !== fantasma.ya)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        } else if(!colisionRIGHT(world,fantasma) && disRIGHT == Math.min(disRIGHT,disLEFT) && (fantasma.x+1 !== fantasma.xa)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        } else if(!colisionLEFT(world,fantasma) && (fantasma.x-1 !== fantasma.xa)) {
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+        if(!colisionRIGHT(world,fantasma) && disRIGHT == Math.min(disUP,disDOWN,disRIGHT,disLEFT) && (fantasma.x+1 !== fantasma.xa)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty  , x: fantasma.x + 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty  , x: fantasma.x + 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty  , x: fantasma.x + 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty  , x: fantasma.x + 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        } else if(!colisionUP(world,fantasma) && disUP == Math.min(disUP,disDOWN,disLEFT) && (fantasma.y-1 !== fantasma.ya)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE   , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE   , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE   , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE   , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        } else if(!colisionDOWN(world,fantasma) && disDOWN == Math.min(disDOWN,disLEFT) && (fantasma.y+1 !== fantasma.ya)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE    , x: fantasma.x , y: fantasma.y +1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE    , x: fantasma.x , y: fantasma.y +1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE    , x: fantasma.x , y: fantasma.y +1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE    , x: fantasma.x , y: fantasma.y +1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+
+        } else if(!colisionLEFT(world,fantasma) && (fantasma.x-1 !== fantasma.xa)) {
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
     }
 
-    if(random == 1){
-      return {fantasma:{fantx: fantasma.fantx, fanty: fantasma.fanty  , x: fantasma.x, y: fantasma.y, xa: fantasma.xa, ya: fantasma.ya, dir: "right"}}
-    }
 
-    if(random == 2){
-      return {fantasma:{fantx: fantasma.fantx, fanty: fantasma.fanty  , x: fantasma.x, y: fantasma.y, xa: fantasma.xa, ya: fantasma.ya, dir: "left"}}
-    }
+    //--------------------------------------------------------------------------------------------------------------------------------------------
 
-    if(random == 3){
-      return {fantasma:{fantx: fantasma.fantx, fanty: fantasma.fanty  , x: fantasma.x, y: fantasma.y, xa: fantasma.xa, ya: fantasma.ya, dir: "down"}}
-    }
+    if(!colisionLEFT(world,fantasma) && disLEFT == Math.min(disUP,disDOWN,disRIGHT,disLEFT) && (fantasma.x-1 !== fantasma.xa)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+          
+        } else if(!colisionUP(world,fantasma) && disUP == Math.min(disUP,disDOWN,disRIGHT) && (fantasma.y-1 !== fantasma.ya)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
 
+        } else if(!colisionDOWN(world,fantasma) && disDOWN == Math.min(disDOWN,disRIGHT) && (fantasma.y+1 !== fantasma.ya)){
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE   , x: fantasma.x , y: fantasma.y + 1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE   , x: fantasma.x , y: fantasma.y + 1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE   , x: fantasma.x , y: fantasma.y + 1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE   , x: fantasma.x , y: fantasma.y + 1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+
+        } else if(!colisionRIGHT(world,fantasma) && (fantasma.x+1 !== fantasma.xa)) {
+          if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+          if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+    }
     
   }
+  } else if(!world.pintPacman && world.gameOver>0) {
+    if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty  , x: world.pacman.x , y: world.pacman.y, xa: fantasma.x, ya: fantasma.y, dir: "none"}};
+    if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty  , x: world.pacman.x , y: world.pacman.y, xa: fantasma.x, ya: fantasma.y, dir: "none"}};
+    if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty  , x: world.pacman.x , y: world.pacman.y, xa: fantasma.x, ya: fantasma.y, dir: "none"}};
+    if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty  , x: world.pacman.x , y: world.pacman.y, xa: fantasma.x, ya: fantasma.y, dir: "none"}};
+  } else {
+    if(fantasma == world.f1) return {f1:{fantx: 13 * SIZE + 2, fanty: 7 * SIZE + 2 , x: 13, y: 7, xa: 0, ya: 0, dir: "none"}};
+    if(fantasma == world.f2) return {f2:{fantx: 12 * SIZE,     fanty: 6 * SIZE,      x: 12, y: 6, xa: 0, ya: 0, dir: "none"}};
+    if(fantasma == world.f3) return {f3:{fantx: 12 * SIZE,     fanty: 7 * SIZE,      x: 12, y: 7, xa: 0, ya: 0, dir: "none"}};
+    if(fantasma == world.f4) return {f4:{fantx: 11 * SIZE,     fanty: 7 * SIZE,      x: 11, y: 7, xa: 0, ya: 0, dir: "none"}};
+  }
+} else {
+  if(pacmancito.x !== fantasma.x && pacmancito.y !== fantasma.y){
+
+  if(world.time%2 == 0){
+
+  if(!colisionUP(world,fantasma) && disUP == Math.max(disUP,disDOWN,disRIGHT,disLEFT) && (fantasma.y-1 !== fantasma.ya)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+
+      } else if(!colisionDOWN(world,fantasma) && disDOWN == Math.max(disDOWN,disRIGHT,disLEFT) && (fantasma.y+1 !== fantasma.ya)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+
+      } else if(!colisionRIGHT(world,fantasma) && disRIGHT == Math.max(disRIGHT,disLEFT) && (fantasma.x+1 !== fantasma.xa)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+
+      } else if(!colisionLEFT(world,fantasma) && (fantasma.x-1 !== fantasma.xa)) {
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+      }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+
+  if(!colisionDOWN(world,fantasma) && disDOWN == Math.max(disUP,disDOWN,disRIGHT,disLEFT) && (fantasma.y+1 !== fantasma.ya)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty + SIZE  , x: fantasma.x, y: fantasma.y + 1, xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+      } else if(!colisionUP(world,fantasma) && disUP == Math.max(disUP,disRIGHT,disLEFT) && (fantasma.y-1 !== fantasma.ya)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+      } else if(!colisionRIGHT(world,fantasma) && disRIGHT == Math.max(disRIGHT,disLEFT) && (fantasma.x+1 !== fantasma.xa)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+      } else if(!colisionLEFT(world,fantasma) && (fantasma.x-1 !== fantasma.xa)) {
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+      }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+
+      if(!colisionRIGHT(world,fantasma) && disRIGHT == Math.max(disUP,disDOWN,disRIGHT,disLEFT) && (fantasma.x+1 !== fantasma.xa)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty  , x: fantasma.x + 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty  , x: fantasma.x + 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty  , x: fantasma.x + 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty  , x: fantasma.x + 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+      } else if(!colisionUP(world,fantasma) && disUP == Math.max(disUP,disDOWN,disLEFT) && (fantasma.y-1 !== fantasma.ya)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE   , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE   , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE   , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE   , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+      } else if(!colisionDOWN(world,fantasma) && disDOWN == Math.max(disDOWN,disLEFT) && (fantasma.y+1 !== fantasma.ya)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE    , x: fantasma.x , y: fantasma.y +1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE    , x: fantasma.x , y: fantasma.y +1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE    , x: fantasma.x , y: fantasma.y +1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE    , x: fantasma.x , y: fantasma.y +1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+
+      } else if(!colisionLEFT(world,fantasma) && (fantasma.x-1 !== fantasma.xa)) {
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+  }
 
 
+  //--------------------------------------------------------------------------------------------------------------------------------------------
+
+  if(!colisionLEFT(world,fantasma) && disLEFT == Math.max(disUP,disDOWN,disRIGHT,disLEFT) && (fantasma.x-1 !== fantasma.xa)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx - SIZE, fanty: fantasma.fanty   , x: fantasma.x - 1, y: fantasma.y, xa: fantasma.x, ya: fantasma.y, dir: "left"}};
+        
+      } else if(!colisionUP(world,fantasma) && disUP == Math.max(disUP,disDOWN,disRIGHT) && (fantasma.y-1 !== fantasma.ya)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx, fanty: fantasma.fanty - SIZE  , x: fantasma.x, y: fantasma.y - 1, xa: fantasma.x, ya: fantasma.y, dir: "up"}};
+
+      } else if(!colisionDOWN(world,fantasma) && disDOWN == Math.max(disDOWN,disRIGHT) && (fantasma.y+1 !== fantasma.ya)){
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE   , x: fantasma.x , y: fantasma.y + 1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE   , x: fantasma.x , y: fantasma.y + 1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE   , x: fantasma.x , y: fantasma.y + 1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx , fanty: fantasma.fanty + SIZE   , x: fantasma.x , y: fantasma.y + 1 , xa: fantasma.x, ya: fantasma.y, dir: "down"}};
+
+      } else if(!colisionRIGHT(world,fantasma) && (fantasma.x+1 !== fantasma.xa)) {
+        if(fantasma == world.f1) return {f1:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f2) return {f2:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f3) return {f3:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+        if(fantasma == world.f4) return {f4:{fantx: fantasma.fantx + SIZE, fanty: fantasma.fanty   , x: fantasma.x + 1, y: fantasma.y , xa: fantasma.x, ya: fantasma.y, dir: "right"}};
+  }
+
+  }
+  } else if(pacmancito.x == world.f1.x && pacmancito.y == world.f1.y) {
+  return {f1:{fantx: 13 * SIZE + 2, fanty: 7 * SIZE + 2 , x: 13, y: 7, xa: 0, ya: 0, dir: "none"}};
+
+  //if(fantasma == world.f2) 
+  //if(fantasma == world.f3) 
+  //if(fantasma == world.f4) 
+} else if(pacmancito.x == world.f2.x && pacmancito.y == world.f2.y) {
+  return {f2:{fantx: 12 * SIZE,     fanty: 6 * SIZE,      x: 12, y: 6, xa: 0, ya: 0, dir: "none"}};
+} else if(pacmancito.x == world.f3.x && pacmancito.y == world.f3.y) {
+  return {f3:{fantx: 12 * SIZE,     fanty: 7 * SIZE,      x: 12, y: 7, xa: 0, ya: 0, dir: "none"}};
+} else if(pacmancito.x == world.f4.x && pacmancito.y == world.f4.y) {
+  return {f4:{fantx: 11 * SIZE,     fanty: 7 * SIZE,      x: 11, y: 7, xa: 0, ya: 0, dir: "none"}};
+}
+}
+}
 
 
 
@@ -426,6 +741,7 @@
   }
 
   //GameOver
+  
 
   function gameOverF(processing,world){
     if(world.vidaPacman == 0){
@@ -434,6 +750,12 @@
       processing.textSize(255);
       processing.text("Game ova", 200,400);
       //processing.text("Hecho por mi pana manue :v", 200,600);
+    }
+    if(acumuladoTotalGanar(world.mapa, 0, world) == 0){
+      processing.noLoop();
+      processing.fill(255,255,255);
+      processing.textSize(150);
+      processing.text("Ganaste mi prro :v", 150,400);
     }
   }
 
@@ -504,7 +826,7 @@
               [1,7,0,0,0,1,1,0,1,1,0,0,6,0,0,1,1,0,1,1,0,0,0,7,1],
               [1,0,0,0,0,0,0,0,1,0,0,1,1,1,0,0,1,0,0,0,0,0,0,0,1],
               [1,0,1,0,1,0,1,0,1,0,0,0,7,0,0,0,1,0,1,0,1,0,1,0,1],
-              [4,0,1,0,1,0,1,0,0,0,1,1,9,1,1,0,0,0,1,0,1,0,1,0,10],
+              [4,0,1,0,1,0,1,0,0,0,1,1,19,1,1,0,0,0,1,0,1,0,1,0,10],
               [4,0,0,0,0,0,0,7,1,0,1,9,9,9,1,0,1,7,0,0,0,0,0,0,10],
               [4,0,1,1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1,1,0,10],
               [1,0,1,1,0,1,1,0,0,0,0,0,8,0,0,0,0,0,1,1,0,1,1,0,1],
@@ -532,15 +854,22 @@
         modoPortal: false,
         portalAnimacion: 6,
         comerPacman : false,
-        f1: { fantx: 13 * SIZE + 2, fanty: 7 * SIZE + 2 , x: 13, y: 7, xa: 13, ya: 7, dir: true},
-        f2: { fantx: 12 * SIZE,     fanty: 6 * SIZE,      x: 12, y: 6, xa: 12, ya: 6, dir: "none"},
-        f3: { fantx: 12 * SIZE,     fanty: 7 * SIZE,      x: 12, y: 7, xa: 12, ya: 7, dir: "none"},
-        f4: { fantx: 11 * SIZE,     fanty: 7 * SIZE,      x: 11, y: 7, xa: 11, ya: 7, dir: "none"},
-        timeFantasmas: 0,
+        f1: { fantx: 13 * SIZE + 2, fanty: 7 * SIZE + 2 , x: 13, y: 7, xa: 0, ya: 0, dir: "none"},
+        f2: { fantx: 12 * SIZE,     fanty: 6 * SIZE,      x: 12, y: 6, xa: 0, ya: 0, dir: "none"},
+        f3: { fantx: 12 * SIZE,     fanty: 7 * SIZE,      x: 12, y: 7, xa: 0, ya: 0, dir: "none"},
+        f4: { fantx: 11 * SIZE,     fanty: 7 * SIZE,      x: 11, y: 7, xa: 0, ya: 0, dir: "none"},
+        timeFantasmas: 60,
+        puntosFantasmas: 0,
+        //f1: { fantx: 15 * SIZE + 2, fanty: 7 * SIZE + 2 , x: 15, y: 7, xa: 0, ya: 0, dir: "none"},
+        //f2: { fantx: 12 * SIZE,     fanty: 6 * SIZE,      x: 12, y: 6, xa: 0, ya: 0, dir: "none"},
+        //f3: { fantx: 12 * SIZE,     fanty: 7 * SIZE,      x: 12, y: 7, xa: 0, ya: 0, dir: "none"},
+        //f4: { fantx: 11 * SIZE,     fanty: 7 * SIZE,      x: 11, y: 7, xa: 0, ya: 0, dir: "none"},
+
         ejex: false,
         ejey: false,
         xMove: true,
         yMove: true,
+        modoGanar: false
 
          
       };
@@ -575,11 +904,11 @@
       processing.textFont(MyFont);
       processing.fill(255,255,255);
       processing.textSize(80);
-      processing.text("PUNTOS : " + acumuladoTotal(world.mapa,0),800,870);
+      processing.text("PUNTOS : " + acumuladoTotal(world.mapa,0,world),800,870) ;
       processing.text("TIEMPO : " + world.time_real,800,820);
 
-      console.log(world.f1.fanty)
-      
+      //console.log(distanciaEuclidiana(2,4,2,2));
+      console.log(acumuladoTotalGanar(world.mapa,0,world))
   
       pintarPacman(processing,world);
     if(world.vidaPacman == 3){
@@ -657,6 +986,8 @@
 
 
       gameOverF(processing,world);
+  
+
       //processing.image(pacman2,  0,0);
 
       //processing.image(f1, 13 * SIZE + 2 , 7 * SIZE + 2, 48, 48);
@@ -669,8 +1000,12 @@
 
     processing.onTic = function (world) {
        return make(world, Object.assign(movimiento(world), { time: world.time + 1}, tiempoReal(world),animacionPacman(world),explotar(world), modoComerFantasmas(world), comerFantasmasF(world), vidasPacman(world),portalAnimacionF(world)
-       ,movimientoFantasma(world,world.f1)));
+       ,fantasmasIA(world,world.f1,world.pacman), fantasmasIA(world,world.f2,world.pacman), fantasmasIA(world,world.f3,world.pacman), fantasmasIA(world,world.f4,world.pacman),teletransporteFantasmas(world), inicioFantasmas(world), inicioFantasmasTime(world),
+       puntosFantasmasF(world), ganar(world.mapa, 0, world)));
     }
+
+
+    //
 
 
 
