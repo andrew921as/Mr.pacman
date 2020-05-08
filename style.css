@@ -75,6 +75,9 @@ h2#tiempo {
     font-size: 100px;
     font-family: "font1";
 }
+.musi{
+    style:none;
+}
 
 @keyframes cambiar {
     0%{color:red}
