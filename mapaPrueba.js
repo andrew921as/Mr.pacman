@@ -76,10 +76,10 @@ const g = {f:11}
 
 
 
-  function acumularPuntos(list, accum){
+  function acumularPuntosG(list, accum){
     if(isEmpty(list)) {return accum;}
-    if((first(list)) == 5){
-      return acumularPuntos(rest(list), accum + 1) 
+    if((first(list)) == 0){
+      return acumularPuntosG(rest(list), accum + 1) 
     } else {
       return acumularPuntos(rest(list), accum);
     }
