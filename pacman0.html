@@ -1,9 +1,19 @@
 <link rel="stylesheet" href="style.css">
 
+
+
 <div class="centrado">
   <canvas id="canvas" width="400" height="400" tabindex="1"></canvas>
-
 </div>
+
+<div class="centrado" style="height: 550px;"></div>
+
+<div class="centrado">
+  <a href="pacman0.html"><button class="botones" id="btnvolver" style="display: none;">Volver a jugar</button></a>
+  <a href="menu.html"><button class="botones-atras" id="btnmenu" style="display: none;">Menu</button></a>
+</div>
+
+
 <h2 id="puntos"></h2>
 <h2 id="tiempo"></h2>
 
@@ -15,7 +25,7 @@
   //Vamos a usar http://processingjs.org/
   // o https://p5js.org/reference/
   // Importamos las librerias
-  let { append, cons, first, isEmpty, isList, length, rest, deepCopy, concat } = functionalLight;
+  let { append, cons, first, isEmpty, isList, length, rest, deepCopy, concat, forEach} = functionalLight;
   
   let pacman1 = null;
   let pacman2 = null;
@@ -36,36 +46,39 @@
     return Object.assign({}, data, attribute);
   }
 
-  function forEach(l, f, index = 0) {
-    if (!isEmpty(l)) {
-      f(first(l), index);
-      forEach(rest(l), f, index + 1);
-    }
-  }
+ 
 
 //Funcion para crear el mapa
   function createMap(processing, mapa, world){
     forEach(mapa, (row, i) => {
         forEach(row, (cell, j) => {
           if (cell == 0) {
+
             activo = true;
             processing.fill(0, 0, 0);
             processing.rect(j * SIZE, i * SIZE, SIZE, SIZE);
             processing.fill(57, 255, 20);
             processing.ellipse(j * SIZE + SIZE / 2, i * SIZE + SIZE / 2, SIZE / 3 , SIZE / 3 );
+
           } if(cell == 1) {
+
             processing.fill(0, 0, 200);
             processing.rect(j * SIZE, i * SIZE, SIZE, SIZE);
+
           } if (cell == 3) {
+
             processing.fill(0, 0, 0);
+
           } if (cell == 6) {
+
             processing.fill(0, 0, 0);
-            
             if (world.time % 2 == 0)
               processing.image(portal, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
             else
               processing.image(portal, j * SIZE + 7.5 , i * SIZE + 7.5 , 35 , 35 );
+
           } if(cell == 11){
+
             if(world.modoPortal){
               if(world.portalAnimacion >4) processing.image(portal1_explosion, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
               if(world.portalAnimacion > 2) processing.image(portal2_explosion, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
@@ -74,21 +87,28 @@
               Object.assign(deepCopy(mapa),mapa[i][j] = 12);
             }
 
-            
-
           }  if(cell == 7) {
+
             processing.fill(0, 200, 200);
             if (world.time % 2 == 0)
               processing.image(barriles, j * SIZE, i * SIZE , 45, 45);
             else
               processing.image(barriles, j * SIZE, i * SIZE , 50, 50);
+
           } if(cell == 9) {
+
             processing.fill(0, 200, 200);
+
           } if(cell == 10) {
+
             processing.fill(0, 200, 200);
+
           } if(cell == 8){
+
             processing.fill(0, 200, 200);
+
           } if(cell == 15){
+
               if(world.modoBarril){
                 if(world.barrilAnimacion == 2 ) processing.image(explosion2, j * SIZE - 10, i * SIZE - 10)
                 if(world.barrilAnimacion == 4 ) processing.image(explosion1, j * SIZE - 10, i * SIZE - 10)
@@ -97,7 +117,9 @@
               }
 
           } if(world.modoComer && world.comerFantasmas == 1 && cell == 11){
+
                   Object.assign(deepCopy(mapa),mapa[i][j] = 12);
+                  
           }
         } );
       });
@@ -776,10 +798,6 @@ function fantasmasIA(world,fantasma,pacmancito){
   }
   } else if(pacmancito.x == world.f1.x && pacmancito.y == world.f1.y) {
   return  {f1:{fantx: 12 * SIZE + 2, fanty: 5 * SIZE + 2 , x: 12, y: 5, xa: 0, ya: 0, dir: "none"}};
-
-  //if(fantasma == world.f2) 
-  //if(fantasma == world.f3) 
-  //if(fantasma == world.f4) 
 } else if(pacmancito.x == world.f2.x && pacmancito.y == world.f2.y) {
   return {f2:{fantx: 12 * SIZE,     fanty: 5 * SIZE,      x: 12, y: 5, xa: 0, ya: 0, dir: "none"}};
 } else if(pacmancito.x == world.f3.x && pacmancito.y == world.f3.y) {
@@ -789,9 +807,6 @@ function fantasmasIA(world,fantasma,pacmancito){
 }
 }
 }
-
-
-
 
   function comerFantasmasF(world){
     if(world.modoComer){
@@ -822,25 +837,26 @@ function fantasmasIA(world,fantasma,pacmancito){
 
   function gameOverF(processing,world){
     if(world.vidaPacman == 0){
+
       processing.noLoop();
       processing.fill(255,255,255);
       processing.textSize(255);
       processing.image(fjosecito, 350, 100);
       processing.text("Game ova", 200,700);
-      
- 
-      //processing.text("Hecho por mi pana manue :v", 200,600);
+      document.getElementById("btnvolver").style.display = "inline";
+      document.getElementById("btnmenu").style.display = "inline";
+
     }
     if(acumuladoTotalGanar(world.mapa, 0, world) == 0){
       processing.noLoop();
       processing.fill(255,255,255);
       processing.textSize(150);
-      processing.text("Ganaste mi prro :v", 150,400);
+      processing.text("¡GANASTE!", 380,400);
+      document.getElementById("btnvolver").style.display = "inline";
+      document.getElementById("btnmenu").style.display = "inline";
+
     }
   }
-
-
-
 
   /**
    * Ejemplo de animación usando los evento de reloj del procesador. Es la animación mas simple. 
@@ -899,10 +915,7 @@ function fantasmasIA(world,fantasma,pacmancito){
       s = processing.second(); 
       m = processing.minute(); 
       h = processing.hour(); 
-      //processing.textFont(processing.createFont(font1,32));
-      //processing.textFont(processing.createFont("Gamer.tff",32));
       
-
       processing.state = { 
         mapa: [[5,5,5,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,5,5,5],
               [5,5,5,1,0,0,0,0,0,0,0,7,1,7,0,0,0,0,0,0,0,1,5,5,5],
@@ -926,10 +939,6 @@ function fantasmasIA(world,fantasma,pacmancito){
         gameOver: 12,
         pintPacman: true,
         pacman: {pacmanx: 11 * SIZE, pacmany: 8.7 * SIZE, x: 12, y: 9},
-        //pacmanx: 11 * SIZE, 
-        //pacmany: 8.7 * SIZE,
-        //pacman.x: 12,
-        //pacman.y: 9, 
         pacmanAnimacion: 1,
         modoComer: false,
         comerFantasmas: 30,
@@ -944,16 +953,10 @@ function fantasmasIA(world,fantasma,pacmancito){
         f4: { fantx: 11 * SIZE,     fanty: 7 * SIZE,      x: 11, y: 7, xa: 0, ya: 0, dir: "none"},
         timeFantasmas: 60,
         puntosFantasmas: 0,
-        //f1: { fantx: 15 * SIZE + 2, fanty: 7 * SIZE + 2 , x: 15, y: 7, xa: 0, ya: 0, dir: "none"},
-        //f2: { fantx: 12 * SIZE,     fanty: 6 * SIZE,      x: 12, y: 6, xa: 0, ya: 0, dir: "none"},
-        //f3: { fantx: 12 * SIZE,     fanty: 7 * SIZE,      x: 12, y: 7, xa: 0, ya: 0, dir: "none"},
-        //f4: { fantx: 11 * SIZE,     fanty: 7 * SIZE,      x: 11, y: 7, xa: 0, ya: 0, dir: "none"},
-
         ejex: false,
         ejey: false,
         xMove: true,
         yMove: true,
-        modoGanar: false,
         sonidoJuego: new buzz.sound("sounds/2.mp3"),
         sonidoVidrio: new buzz.sound("sounds/vidrio.mp3"),
         sonidoImpacto: new buzz.sound("sounds/impacto.mp3")
@@ -962,10 +965,11 @@ function fantasmasIA(world,fantasma,pacmancito){
     }
     // Dibuja algo en el canvas. Aqui se pone todo lo que quieras pintar
 
-
     processing.drawGame = function (world) {
       processing.background(0, 0, 0);
+
       //Mapa
+
       createMap(processing,world.mapa,world);
 
       //COMER
@@ -976,22 +980,14 @@ function fantasmasIA(world,fantasma,pacmancito){
 
       pintarFantasmas(processing,world);
 
-      //console.log(world.comerFantasmas);
-      //console.log(world.modoComer);
+      // GUI
 
-      //console.log(world.comerFantasmas)
-      //Pacman
-   
-      //document.getElementById("puntos").innerHTML = acumuladoTotal(mapa,0);
-
-      //document.getElementById("tiempo").innerHTML = world.time_real;
-
-      // Texto de puntos y tiempo 
       processing.textFont(MyFont);
       processing.fill(255,255,255);
       processing.textSize(80);
       processing.text("PUNTOS : " + acumuladoTotal(world.mapa,0,world),800,870) ;
       processing.text("TIEMPO : " + world.time_real,800,820);
+      pintarVidasPacman(processing,world);
 
       //Sonidos
 
@@ -1002,48 +998,31 @@ function fantasmasIA(world,fantasma,pacmancito){
       if(world.modoBarril == true){
         world.sonidoImpacto.play();
       }
-      
 
       world.sonidoJuego.play();
-
 
       if (!buzz.isSupported()) {
         alert("Your browser is too old, time to update!");
       }
-      
 
-      //console.log(distanciaEuclidiana(2,4,2,2));
-      console.log(acumuladoTotalGanar(world.mapa,0,world))
-  
+      //PACMAN
+
       pintarPacman(processing,world);
 
-      pintarVidasPacman(processing,world);
 
+      //GAME OVER
 
       gameOverF(processing,world);
-  
-
-      //processing.image(pacman2,  0,0);
-
-      //processing.image(f1, 13 * SIZE + 2 , 7 * SIZE + 2, 48, 48);
-      //processing.image(f2, 12 * SIZE , 6 * SIZE, 50, 50);
-      //processing.image(f3, 12 * SIZE , 7 * SIZE, 50, 50);
-      //processing.image(f4, 11 * SIZE , 7 * SIZE, 50 ,50);
-
-
+      
     }
+
+
 
     processing.onTic = function (world) {
        return make(world, Object.assign(movimiento(world), { time: world.time + 1}, tiempoReal(world),animacionPacman(world),explotar(world), modoComerFantasmas(world), comerFantasmasF(world), vidasPacman(world),portalAnimacionF(world)
        ,fantasmasIA(world,world.f1,world.pacman), fantasmasIA(world,world.f2,world.pacman), fantasmasIA(world,world.f3,world.pacman), fantasmasIA(world,world.f4,world.pacman),teletransporteFantasmas(world), inicioFantasmas(world), inicioFantasmasTime(world),
        puntosFantasmasF(world), ganar(world.mapa, 0, world)));
     }
-
-
-    //
-
-
-
 
     processing.onKeyEvent = function (world, keyCode) {
       switch (keyCode) {

@@ -1,11 +1,13 @@
+
 <!DOCTYPE html>
 
 <head>
-
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mr.Pacman</title>
     <link rel="stylesheet" href="style.css">
+    <script src="web-lib/buzz.min.js"></script>
 </head>
 <body>
     <div class="centrado">
@@ -17,7 +19,14 @@
         
     </div>
     
-    <embed src="sounds/menu.mp3" autostarty="true" loop="true" volume="80" width="0" height="0">
+    
+
+   
+    <script>
+        let mySound = new buzz.sound("sounds/menu.mp3");
+
+        mySound.play();
+    </script>
 
 </body>
 </html>
