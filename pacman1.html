@@ -2,8 +2,17 @@
 
 <div class="centrado">
   <canvas id="canvas" width="400" height="400" tabindex="1"></canvas>
-
 </div>
+
+<div class="centrado" style="height: 550px;"></div>
+
+<!-- Botones -->
+<div class="centrado">
+  <a href="pacman1.html"><button class="botones" id="btnvolver" style="display: none;">Volver a jugar</button></a>
+  <a href="menu.html"><button class="botones-atras" id="btnmenu" style="display: none;">Menu</button></a>
+</div>
+
+<!-- Contadores -->
 <h2 id="puntos"></h2>
 <h2 id="tiempo"></h2>
 
@@ -15,57 +24,95 @@
   //Vamos a usar http://processingjs.org/
   // o https://p5js.org/reference/
   // Importamos las librerias
-  let { append, cons, first, isEmpty, isList, length, rest, deepCopy, concat } = functionalLight;
+  let { append, cons, first, isEmpty, isList, length, rest, deepCopy, concat, forEach } = functionalLight;
   
-  let pacman1 = null;
-  let pacman2 = null;
-  let pacman3 = null;
-  let barriles = null;
-  let f1 = null;
-  let f1_2 = null;
-  let f2 = null;
-  let f2_2 = null;
-  let f3 = null;
-  let f3_2 = null;
-  let f4 = null;
-  let f4_2 = null;
-  let portal = null;
+  //Declaración de imagenes
+      let barriles = null;
+      let explosion1 = null;
+      let explosion2 = null;
+      let f1 = null;
+      let f1_2 =null;
+      let f2 = null;
+      let f2_2 =null;
+      let f3 = null;
+      let f3_2 =null;
+      let f4 = null;
+      let f4_2 =null;
+      let ff = null;
+      let ff_2 =null;
+      let fjosecito = null;
+      let pacman1 = null;
+      let pacman1_left = null;
+      let pacman1_down = null;
+      let pacman1_up =null;
+      let pacman2 = null;
+      let pacman2_left = null;
+      let pacman2_down = null;
+      let pacman2_up = null;
+      let pacman3 = null;
+      let pacman3_left = null;
+      let pacman3_down = null;
+      let pacman3_up = null;
+      let pacman1Muerte = null;
+      let pacman2Muerte = null;
+      let pacman3Muerte = null;
+      let pacman4Muerte = null;
+      let pacman5Muerte = null;
+      let vidaPacmanImg = null;
+      let portal = null;
+      let portal1_explosion = null;
+      let portal2_explosion = null;
+      let portal3_explosion = null;
 
-
+ /**
+   * Funcion para hacer una copia profunda de un objeto 
+   * @param {Object} -> data
+   * @param {Object} -> attribute
+   * @returns {Object}
+  */ 
   function make(data, attribute) {
     return Object.assign({}, data, attribute);
   }
 
-  function forEach(l, f, index = 0) {
-    if (!isEmpty(l)) {
-      f(first(l), index);
-      forEach(rest(l), f, index + 1);
-    }
-  }
 
-//Funcion para crear el mapa
+  /**
+   * Funcion para pintar el mapa
+   * @param {*} -> processing
+   * @param {array} -> mapa
+   * @param {Object} -> world
+   * @returns {*}
+  */ 
+
   function createMap(processing, mapa, world){
     forEach(mapa, (row, i) => {
         forEach(row, (cell, j) => {
           if (cell == 0) {
+
             activo = true;
             processing.fill(0, 0, 0);
             processing.rect(j * SIZE, i * SIZE, SIZE, SIZE);
             processing.fill(57, 255, 20);
             processing.ellipse(j * SIZE + SIZE / 2, i * SIZE + SIZE / 2, SIZE / 3 , SIZE / 3 );
+
           } if(cell == 1) {
+
             processing.fill(0, 0, 200);
             processing.rect(j * SIZE, i * SIZE, SIZE, SIZE);
+
           } if (cell == 3) {
+
             processing.fill(0, 0, 0);
+
           } if (cell == 6) {
+
             processing.fill(0, 0, 0);
-            
             if (world.time % 2 == 0)
               processing.image(portal, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
             else
               processing.image(portal, j * SIZE + 7.5 , i * SIZE + 7.5 , 35 , 35 );
+
           } if(cell == 11){
+
             if(world.modoPortal){
               if(world.portalAnimacion >4) processing.image(portal1_explosion, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
               if(world.portalAnimacion > 2) processing.image(portal2_explosion, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
@@ -74,21 +121,28 @@
               Object.assign(deepCopy(mapa),mapa[i][j] = 12);
             }
 
-            
-
           }  if(cell == 7) {
+
             processing.fill(0, 200, 200);
             if (world.time % 2 == 0)
               processing.image(barriles, j * SIZE, i * SIZE , 45, 45);
             else
               processing.image(barriles, j * SIZE, i * SIZE , 50, 50);
+
           } if(cell == 9) {
+
             processing.fill(0, 200, 200);
+
           } if(cell == 10) {
+
             processing.fill(0, 200, 200);
+
           } if(cell == 8){
+
             processing.fill(0, 200, 200);
+
           } if(cell == 15){
+
               if(world.modoBarril){
                 if(world.barrilAnimacion == 2 ) processing.image(explosion2, j * SIZE - 10, i * SIZE - 10)
                 if(world.barrilAnimacion == 4 ) processing.image(explosion1, j * SIZE - 10, i * SIZE - 10)
@@ -97,7 +151,9 @@
               }
 
           } if(world.modoComer && world.comerFantasmas == 1 && cell == 11){
+
                   Object.assign(deepCopy(mapa),mapa[i][j] = 12);
+                  
           }
         } );
       });
@@ -105,11 +161,14 @@
 
   }
 
+  // Movimiento
 
+   /**
+   * Funcion que permite el movimiento del pacman y evaluar las colisiones para saber si el pacman se puede mover o no(Tambien se implementan los teletransportes)
+   * @param {Object} -> world
+   * @returns {Object}
+  */ 
 
-  //Funciones para movimiento 
-
-  
   function movimiento(world){
     const time1 = world.time;
     const animacion = world.pacmanAnimacion;
@@ -135,7 +194,14 @@
   }
 
   //PACMAN
-
+  
+  /**
+   * Funcion que pinta el pacman con una animación
+   * @param {*} -> processing
+   * @param {Object} -> world
+   * @returns {*}
+  */ 
+  
   function pintarPacman(processing,world){
     if(world.pintPacman){
       if (world.pacmanAnimacion == 1) {
@@ -176,7 +242,12 @@
       if (world.gameOver > 2) processing.image(pacman5Muerte, world.pacman.pacmanx , world.pacman.pacmany, 150 , 100);
    }
   }
-
+ 
+  /**
+   * Funcion que anima el movimiento del pacman con respecto al tiempo
+   * @param {Object} -> world
+   * @returns {object}
+  */ 
   function animacionPacman(world){
     if(world.pacmanAnimacion < 4) return {pacmanAnimacion: world.pacmanAnimacion + 1};
     return {pacmanAnimacion: 1};
@@ -184,7 +255,15 @@
 
 //VIDAS
 
+ /**
+   * Funcion que pinta inicialmente las vidas de pacman y las retira cuando el pacman las pierde
+   * @param {*} -> processing
+   * @param {Object} -> world
+   * @returns {*}
+  */ 
+
  function pintarVidasPacman(processing, world){
+   //Condicionales para poner en pantalla las vidas al pacman
   if(world.vidaPacman == 4){
       if(world.pacmanAnimacion == 1){
         processing.image(vidaPacmanImg, 100  ,755,140,140);
@@ -209,10 +288,8 @@
         processing.image(vidaPacmanImg, 240,760,140,140);
       }
     }
-
-      //Condicionales para poner en pantalla las vidas al pacman
-
-      if(world.vidaPacman == 3){
+      
+  if(world.vidaPacman == 3){
       if(world.pacmanAnimacion == 1){
         processing.image(vidaPacmanImg, 100  ,755,140,140);
         processing.image(vidaPacmanImg, 170 ,765,140,140);
@@ -236,7 +313,7 @@
 
       }
     }
-    if(world.vidaPacman == 2){
+  if(world.vidaPacman == 2){
           if(world.pacmanAnimacion == 1){
             processing.image(vidaPacmanImg, 100  ,755,140,140);
 
@@ -255,10 +332,14 @@
             processing.image(vidaPacmanImg, 100  ,760,140,140);
 
           }
-      }
+    }
  }
 
-
+ /**
+   * Funcion que determina cuando pacman pierde una vida
+   * @param {Object} -> world
+   * @returns {Object}
+  */ 
   function vidasPacman(world){
     if(!world.modoComer){
     if((world.f1.y == world.pacman.y) && (world.f1.x == world.pacman.x)){
@@ -296,7 +377,14 @@
 
 
   //COMER
-
+  
+ /**
+   * funcion que realiza una copia de la lista mapa y modifica uno de sus elementos
+   * @param {*} -> processing
+   * @param {Object} -> world
+   * @param {array} -> mapa
+   * @returns {array}
+  */ 
   function comer(processing, world, mapa){
     if(mapa[world.pacman.y][world.pacman.x] == 0){
       Object.assign(deepCopy(mapa),mapa[world.pacman.y][world.pacman.x] = 2);
@@ -319,6 +407,11 @@
 
 
 //EXPLOTAR
+/**
+   * Esta funcion permite animar la explocion de los barriles cuando el pacman pase sobre ellos
+   * @param {Object} -> world
+   * @returns {object}
+  */ 
 
   function explotar(world){
 
@@ -332,7 +425,11 @@
 
 
   }
-
+  /**
+   * Esta funcion permite animar como se rompen los portales cuando el pacman pase sobre ellos
+   * @param {Object} -> world
+   * @returns {object}
+  */ 
 
   function portalAnimacionF(world){
     if(world.mapa[world.pacman.y][world.pacman.x]  == 11){
@@ -342,12 +439,14 @@
       if(world.portalAnimacion > 0) return {portalAnimacion: world.portalAnimacion - 1}
       return { portalAnimacion:6, modoPortal: false};
     }
-  }
-
-
+}
 
 //PUNTOS
-
+  /**
+   * Funcion que acumula los puntos al comer fantasmas
+   * @param {Object} -> world
+   * @returns {object}
+  */ 
   function puntosFantasmasF(world){
     if(world.pacman.x == world.f1.x && world.pacman.y == world.f1.y && world.modoComer){
         return {puntosFantasmas: world.puntosFantasmas + 200};
@@ -359,7 +458,13 @@
         return {puntosFantasmas: world.puntosFantasmas + 200};
     }
   }
-
+  /**
+   * Funcion que acumula los puntos al comer galletas y barriles durante la partida 
+   * @param {Object} -> world
+   * @param {list} -> list
+   * @param {number} -> accum
+   * @returns {number}
+  */ 
   function acumularPuntos(list, accum, world){
     if(isEmpty(list)) {return accum;}
     if((first(list)) == 2){
@@ -372,12 +477,26 @@
         return acumularPuntos(rest(list), accum, world );
     }
   }
-
+ 
+  /**
+   * Funcion que acumula los puntos al comer galletas, barriles y fantasmas durante la partida 
+   * @param {array} -> list
+   * @param {number} -> accum
+   * @param {Object} -> world 
+   * @returns {number}
+  */ 
   function acumuladoTotal(list, accum, world){
     if(isEmpty(list)) return accum + world.puntosFantasmas;
     return acumularPuntos(first(list),accum,world) + acumuladoTotal(rest(list),accum,world);
   }
 
+  /**
+   * Funcion que determina el total de ceros que hay en una lista
+   * @param {array} -> list
+   * @param {number} -> accum
+   * @param {Object} -> world 
+   * @returns {number}
+  */ 
   function ganar(list, accum, world){
       if(isEmpty(list)) {return accum;}
       if((first(list)) == 0){
@@ -385,9 +504,17 @@
       } else  {
           return ganar(rest(list), accum, world );
       }
-   }
+  }
+  
+  /**
+   * Funcion que determina el total de ceros que hay en una lista de listas
+   * @param {array} -> list
+   * @param {number} -> accum
+   * @param {Object} -> world 
+   * @returns {number}
+  */ 
 
-   function acumuladoTotalGanar(list, accum, world){
+  function acumuladoTotalGanar(list, accum, world){
     if(isEmpty(list)) return accum;
     return ganar(first(list),accum,world) + acumuladoTotalGanar(rest(list),accum,world);
   }
@@ -395,31 +522,62 @@
 
 //COLISIONES
 
+  /**
+   *Determina si la posicion de arriba del pacman es una pared
+   * @param {Object} -> world
+   * @param {Object} -> pos
+   * @returns {boolean}
+  */ 
   function colisionUP(world,pos){
-    if(world.mapa[pos.y - 1][pos.x] == 1 || world.mapa[pos.y - 1][pos.x] == 19) return true;
+    if(world.mapa[pos.y - 1][pos.x] == 1) return true;
     return false;
   }
-
+  /**
+   *Determina si la posicion de abajo del pacman es una pared
+   * @param {Object} -> world
+   * @param {Object} -> pos
+   * @returns {boolean}
+  */ 
   function colisionDOWN(world, pos){
-    if(world.mapa[pos.y + 1][pos.x] == 1  || world.mapa[pos.y - 1][pos.x] == 19) return true;
+    if(world.mapa[pos.y + 1][pos.x] == 1) return true;
     return false;
   }
-
+  /**
+   * Determina si la posicion de la derecha del pacman es una pared
+   * @param {Object} -> world
+   * @param {Object} -> pos
+   * @returns {boolean}
+  */ 
   function colisionRIGHT(world, pos){
-    if(world.mapa[pos.y][pos.x + 1] == 1 || world.mapa[pos.y - 1][pos.x] == 19) return true;
+    if(world.mapa[pos.y][pos.x + 1] == 1) return true;
     return false;
   }
-
+  /**
+   * Determina si la posicion de la izquierda del pacman es una pared
+   * @param {Object} -> world
+   * @param {Object} -> pos
+   * @returns {boolean}
+  */ 
   function colisionLEFT(world, pos){
-    if(world.mapa[pos.y][pos.x - 1] == 1 || world.mapa[pos.y - 1][pos.x] == 19) return true;
+    if(world.mapa[pos.y][pos.x - 1] == 1) return true;
     return false;
   }
-
+  /**
+   * Determina si la posicion de la derecha del pacman es un teletransporte
+   * @param {Object} -> world
+   * @param {Object} -> pos
+   * @returns {boolean}
+  */ 
   function teletransportarRIGHT(world, pos){
     if(world.mapa[pos.y][pos.x] == 4 ) return true;
     return false;
   }
-
+ /**
+   *Determina si la posicion de la Izquierda del pacman es un teletransporte
+   * @param {Object} -> world
+   * @param {Object} -> pos
+   * @returns {boolean}
+  */ 
   function teletransportarLEFT(world, pos){
     if(world.mapa[pos.y][pos.x] == 10 ) return true;
     return false;
@@ -428,6 +586,12 @@
 
   //FANTASMAS
 
+  /**
+   * Funcion que pinta los fantasmas con una animación
+   * @param {*} -> processing
+   * @param {Object} -> world
+   * @returns {*}
+  */ 
   function pintarFantasmas(processing,world){
     if(world.modoComer && world.pintPacman){
       if (world.time % 2 == 0)
@@ -477,16 +641,27 @@
 
   }
 
+//MOVIMIENTO FANTASMAS
 
-  //MOVIMIENTO FANTASMAS
-
-
+/**
+ * Funcion para saber la distancia euclidiana entre dos puntos
+ * @param{number}->x1
+ * @param{number}->y1
+ * @param{number}->x2
+ * @param{number}->y2
+ * @return {number}
+ * @example: distanciaEuclidiana(1,1,2,2)//-> Math.sqrt(2)
+ */
 
 function distanciaEuclidiana(x1,y1,x2,y2){
   return Math.sqrt((Math.pow((x2-x1),2))+(Math.pow((y2-y1),2)));
 }
 
-
+/**
+ * Funcion para marcar el tiempo en el que los fantasmas salen de la jaula al iniciar la partida
+ * @param{Object}-> world
+ * @return{Object}
+ */
 function inicioFantasmasTime(world){
   if(world.pintPacman && (world.timeFantasmas > 0)){
     return {timeFantasmas: world.timeFantasmas -1};
@@ -495,6 +670,12 @@ function inicioFantasmasTime(world){
   }
 }
 
+
+/**
+ * Funcion para ir sacando los fantasmas de la jaula al iniciar la partida
+ * @param{Object}->world
+ * @return{Object}
+ */
 function inicioFantasmas(world){
   if(world.timeFantasmas == 50) return {f2: { fantx: 12 * SIZE + 2, fanty: 5 * SIZE + 2 , x: 12, y: 5, xa: 0, ya: 0, dir: "none"}};
   if(world.timeFantasmas == 30) return {f3: { fantx: 12 * SIZE + 2, fanty: 5 * SIZE + 2 , x: 12, y: 5, xa: 0, ya: 0, dir: "none"}};
@@ -502,7 +683,11 @@ function inicioFantasmas(world){
   if(world.timeFantasmas == 1) return {f1: { fantx: 12 * SIZE + 2, fanty: 5 * SIZE + 2 , x: 12, y: 5, xa: 0, ya: 0, dir: "none"}};
 }
 
-
+/**
+ * Funcion que permite a los fantasmas utilizar el teletransporte que hay en el mapa
+ * @param{Object}-> world
+ * @return{Object}
+ */
 function teletransporteFantasmas(world){
   if(teletransportarLEFT(world,world.f1)){
     return {f1:{fantx: 1 * SIZE + 2, fanty: world.f1.fanty, x: 1, y: world.f1.y, xa: world.f1.x, ya: world.f1.y, dir: "none"}};
@@ -537,11 +722,16 @@ function teletransporteFantasmas(world){
   }
 }
 
-
+  /**
+   * Esta función genera el movimiento de los fantasmas calculando la distancia euclidiana que hay entre ellos y el pacman (dependiendo del estado o de la dificultad, los fantasmas se van a acercar o alejar del pacman).
+   * @param {Object} -> world
+   * @param {*} -> processing
+   * @returns {Object}
+  */ 
 
 
 function fantasmasIA(world,fantasma,pacmancito){
-  let random = Math.round(Math.random() * (3 - 0)) + 0;
+  let random = Math.round(Math.random() * (1 - 0)) + 0;
   const disUP = distanciaEuclidiana(fantasma.x,fantasma.y - 1, pacmancito.x + random , pacmancito.y + random );
   const disDOWN = distanciaEuclidiana(fantasma.x,fantasma.y + 1, pacmancito.x - random , pacmancito.y - random);
   const disRIGHT = distanciaEuclidiana(fantasma.x + 1 ,fantasma.y, pacmancito.x + random, pacmancito.y - random);
@@ -776,10 +966,6 @@ function fantasmasIA(world,fantasma,pacmancito){
   }
   } else if(pacmancito.x == world.f1.x && pacmancito.y == world.f1.y) {
   return  {f1:{fantx: 12 * SIZE + 2, fanty: 5 * SIZE + 2 , x: 12, y: 5, xa: 0, ya: 0, dir: "none"}};
-
-  //if(fantasma == world.f2) 
-  //if(fantasma == world.f3) 
-  //if(fantasma == world.f4) 
 } else if(pacmancito.x == world.f2.x && pacmancito.y == world.f2.y) {
   return {f2:{fantx: 12 * SIZE,     fanty: 5 * SIZE,      x: 12, y: 5, xa: 0, ya: 0, dir: "none"}};
 } else if(pacmancito.x == world.f3.x && pacmancito.y == world.f3.y) {
@@ -789,10 +975,12 @@ function fantasmasIA(world,fantasma,pacmancito){
 }
 }
 }
-
-
-
-
+  
+  /**
+   * Funcion que sirve para desactivar la habilidad de pacman de comer fantasmas
+   * @param{Object}-> world
+   * @return{Object}
+   */
   function comerFantasmasF(world){
     if(world.modoComer){
       if(world.comerFantasmas <= 30 && world.comerFantasmas>1){
@@ -802,7 +990,13 @@ function fantasmasIA(world,fantasma,pacmancito){
       }
     }
   }
+  
 
+  /**
+   * Funcion utilizada para activar la habilidad de pacman para comer fantasmas
+   * @param{Object}->world
+   * @return{object}
+   */
   function modoComerFantasmas(world){
     if(world.mapa[world.pacman.y][world.pacman.x] == 11){
       return {modoComer: true};
@@ -812,42 +1006,51 @@ function fantasmasIA(world,fantasma,pacmancito){
 
 
   //TIEMPO
-
+  /**
+   * Funcion para saber cuanto tiempo lleva el jugador en la partida
+   * @param{Object}-> world
+   * @return{number}
+   */
   function tiempoReal(world){
     if(world.time%6 == 0) return {time_real: world.time_real + 1};
   }
 
   //GameOver
   
+   /**
+    * Funcion para finalizar la partida generando una pantalla u otra. Es de victoria si el jugador consigue todos los puntos del mapa, o de derrota si el pacman pierde todas las vidas.
+    * @param {*}-> processing
+    * @param {Object}-> world
+    * @return {Object}
+    */
 
   function gameOverF(processing,world){
     if(world.vidaPacman == 0){
+
       processing.noLoop();
       processing.fill(255,255,255);
       processing.textSize(255);
       processing.image(fjosecito, 350, 100);
       processing.text("Game ova", 200,700);
-      
- 
-      //processing.text("Hecho por mi pana manue :v", 200,600);
+      document.getElementById("btnvolver").style.display = "inline";
+      document.getElementById("btnmenu").style.display = "inline";
+
     }
     if(acumuladoTotalGanar(world.mapa, 0, world) == 0){
       processing.noLoop();
       processing.fill(255,255,255);
       processing.textSize(150);
-      processing.text("Ganaste mi prro :v", 150,400);
+      processing.text("¡GANASTE!", 380,400);
+      document.getElementById("btnvolver").style.display = "inline";
+      document.getElementById("btnmenu").style.display = "inline";
+
     }
   }
 
-
-
-
-  /**
-   * Ejemplo de animación usando los evento de reloj del procesador. Es la animación mas simple. 
-   * No requiere interacción con el usuario
-   */
+  //Dimensiones del juego
   const WIDTH = 1250;
   const HEIGHT = 900;
+  //Tamaño de cada segmento del mundo
   const SIZE = 50; 
 
   function sketchProc(processing) {
@@ -857,6 +1060,8 @@ function fantasmasIA(world,fantasma,pacmancito){
     processing.setup = function () {
       processing.frameRate(6);
       processing.size(WIDTH, HEIGHT);
+
+      //Imágenes del juego
       barriles = processing.loadImage('images/barriles2.2.png');
       explosion1 = processing.loadImage('images/explosion1.png');
       explosion2 = processing.loadImage('images/explosion2.png');
@@ -894,16 +1099,12 @@ function fantasmasIA(world,fantasma,pacmancito){
       portal2_explosion = processing.loadImage('images/portal2-explosion.png');
       portal3_explosion = processing.loadImage('images/portal3-explosion.png');
 
-      //fonts
+      //Fuente del texto 
       MyFont = processing.createFont("font1");
-      s = processing.second(); 
-      m = processing.minute(); 
-      h = processing.hour(); 
-      //processing.textFont(processing.createFont(font1,32));
-      //processing.textFont(processing.createFont("Gamer.tff",32));
       
-
+      
       processing.state = { 
+        //Mapa del juego
         mapa :[[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
               [1,6,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,6,1],
               [1,0,1,1,1,7,1,1,1,1,1,0,1,0,1,1,1,1,1,7,1,1,1,0,1],
@@ -911,25 +1112,22 @@ function fantasmasIA(world,fantasma,pacmancito){
               [1,1,1,1,0,1,0,0,0,0,1,1,1,1,1,0,0,0,0,1,0,1,1,1,1],
               [5,5,5,1,0,1,0,1,1,0,0,0,0,0,0,0,1,1,0,1,0,1,5,5,5],
               [1,1,1,1,0,0,0,0,1,0,1,1,2,1,1,0,1,0,0,0,0,1,1,1,1],
-              [4,0,0,0,0,1,1,0,1,0,1,3,9,10,1,0,1,0,1,1,0,0,0,0,4],
+              [4,0,0,0,0,1,1,0,1,0,1,3,9,9,1,0,1,0,1,1,0,0,0,0,10],
               [1,1,1,1,0,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,0,1,1,1,1],
               [5,5,5,1,0,7,0,0,0,0,0,0,8,0,0,0,0,0,0,7,0,1,5,5,5],
               [1,1,1,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1],
               [1,0,0,0,0,1,0,0,0,0,7,0,1,0,7,0,0,0,0,1,0,0,0,0,1],
-              [1,0,1,1,1,1,0,0,1,1,1,0,1,0,1,1,1,1,0,1,1,1,1,0,1],
+              [1,0,1,1,1,1,0,1,1,1,1,0,1,0,1,1,1,1,0,1,1,1,1,0,1],
               [1,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,1],
               [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]],
+        //Estados      
         time: 0,
         time_real: 0,
         puntos: 0,
-        vidaPacman: 3,
+        vidaPacman: 2,
         gameOver: 12,
         pintPacman: true,
         pacman: {pacmanx: 11 * SIZE, pacmany: 8.7 * SIZE, x: 12, y: 9},
-        //pacmanx: 11 * SIZE, 
-        //pacmany: 8.7 * SIZE,
-        //pacman.x: 12,
-        //pacman.y: 9, 
         pacmanAnimacion: 1,
         modoComer: false,
         comerFantasmas: 30,
@@ -944,31 +1142,26 @@ function fantasmasIA(world,fantasma,pacmancito){
         f4: { fantx: 11 * SIZE,     fanty: 7 * SIZE,      x: 11, y: 7, xa: 0, ya: 0, dir: "none"},
         timeFantasmas: 60,
         puntosFantasmas: 0,
-        //f1: { fantx: 15 * SIZE + 2, fanty: 7 * SIZE + 2 , x: 15, y: 7, xa: 0, ya: 0, dir: "none"},
-        //f2: { fantx: 12 * SIZE,     fanty: 6 * SIZE,      x: 12, y: 6, xa: 0, ya: 0, dir: "none"},
-        //f3: { fantx: 12 * SIZE,     fanty: 7 * SIZE,      x: 12, y: 7, xa: 0, ya: 0, dir: "none"},
-        //f4: { fantx: 11 * SIZE,     fanty: 7 * SIZE,      x: 11, y: 7, xa: 0, ya: 0, dir: "none"},
-
         ejex: false,
         ejey: false,
         xMove: true,
         yMove: true,
-        modoGanar: false,
-        sonidoJuego: new buzz.sound("sounds/2.mp3"),
-        sonidoVidrio: new buzz.sound("sounds/vidrio.mp3"),
-        sonidoImpacto: new buzz.sound("sounds/impacto.mp3")
+        sonidoJuego: new buzz.sound("sounds/2.mp3"),            //Sonido ambiente
+        sonidoVidrio: new buzz.sound("sounds/vidrio.mp3"),      //Sonido de los fragmentos del portal
+        sonidoImpacto: new buzz.sound("sounds/impacto.mp3")     //Sonido de la explosion de los barriles
 
       };
     }
     // Dibuja algo en el canvas. Aqui se pone todo lo que quieras pintar
 
-
     processing.drawGame = function (world) {
       processing.background(0, 0, 0);
-      //Mapa
+
+      //Crear el mapa
+
       createMap(processing,world.mapa,world);
 
-      //COMER
+      //Comer
 
       comer(processing,world, world.mapa);
     
@@ -976,22 +1169,14 @@ function fantasmasIA(world,fantasma,pacmancito){
 
       pintarFantasmas(processing,world);
 
-      //console.log(world.comerFantasmas);
-      //console.log(world.modoComer);
+      // GUI
 
-      //console.log(world.comerFantasmas)
-      //Pacman
-   
-      //document.getElementById("puntos").innerHTML = acumuladoTotal(mapa,0);
-
-      //document.getElementById("tiempo").innerHTML = world.time_real;
-
-      // Texto de puntos y tiempo 
       processing.textFont(MyFont);
       processing.fill(255,255,255);
       processing.textSize(80);
       processing.text("PUNTOS : " + acumuladoTotal(world.mapa,0,world),800,870) ;
       processing.text("TIEMPO : " + world.time_real,800,820);
+      pintarVidasPacman(processing,world);
 
       //Sonidos
 
@@ -1002,51 +1187,36 @@ function fantasmasIA(world,fantasma,pacmancito){
       if(world.modoBarril == true){
         world.sonidoImpacto.play();
       }
-      
 
       world.sonidoJuego.play();
-
 
       if (!buzz.isSupported()) {
         alert("Your browser is too old, time to update!");
       }
-      
 
-      //console.log(distanciaEuclidiana(2,4,2,2));
-      console.log(acumuladoTotalGanar(world.mapa,0,world))
-  
+      //PACMAN
+
       pintarPacman(processing,world);
 
-      pintarVidasPacman(processing,world);
-
+      //GAME OVER
 
       gameOverF(processing,world);
-  
-
-      //processing.image(pacman2,  0,0);
-
-      //processing.image(f1, 13 * SIZE + 2 , 7 * SIZE + 2, 48, 48);
-      //processing.image(f2, 12 * SIZE , 6 * SIZE, 50, 50);
-      //processing.image(f3, 12 * SIZE , 7 * SIZE, 50, 50);
-      //processing.image(f4, 11 * SIZE , 7 * SIZE, 50 ,50);
-
-
+      
     }
 
+
     processing.onTic = function (world) {
+
+      //Retorna todos los eventos del mundo por tic
+
        return make(world, Object.assign(movimiento(world), { time: world.time + 1}, tiempoReal(world),animacionPacman(world),explotar(world), modoComerFantasmas(world), comerFantasmasF(world), vidasPacman(world),portalAnimacionF(world)
        ,fantasmasIA(world,world.f1,world.pacman), fantasmasIA(world,world.f2,world.pacman), fantasmasIA(world,world.f3,world.pacman), fantasmasIA(world,world.f4,world.pacman),teletransporteFantasmas(world), inicioFantasmas(world), inicioFantasmasTime(world),
        puntosFantasmasF(world), ganar(world.mapa, 0, world)));
     }
 
-
-    //
-
-
-
-
     processing.onKeyEvent = function (world, keyCode) {
       switch (keyCode) {
+         //Determina la dirección del pacman
         case processing.UP:
           return make(world, { ejex:false, ejey: true, yMove: true });
           break;
