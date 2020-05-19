@@ -1040,7 +1040,7 @@ function fantasmasIA(world,fantasma,pacmancito){
       processing.noLoop();
       processing.fill(255,255,255);
       processing.textSize(150);
-      processing.text("¡GANASTE!", 380,400);
+      processing.text("¡YOU WIN!!", 380,400);
       document.getElementById("btnvolver").style.display = "inline";
       document.getElementById("btnmenu").style.display = "inline";
 
@@ -1228,6 +1228,9 @@ function fantasmasIA(world,fantasma,pacmancito){
           break;
         case processing.RIGHT:
           return make(world, { ejex: true, ejey: false, xMove: true });
+          break;
+        default: 
+          return make(world, {});
           break;
       }
     }
