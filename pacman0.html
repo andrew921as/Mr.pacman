@@ -1,7 +1,10 @@
 <link rel="stylesheet" href="style.css">
 
 <div class="centrado">
-  <canvas id="canvas" width="400" height="400" tabindex="1"></canvas>
+  
+  <canvas id="canvas" width="400" height="400" tabindex="1">
+
+  </canvas>
 </div>
 
 <div class="centrado" style="height: 550px;"></div>
@@ -11,6 +14,8 @@
   <a href="pacman0.html"><button class="botones" id="btnvolver" style="display: none;">Volver a jugar</button></a>
   <a href="index.md.html"><button class="botones-atras" id="btnmenu" style="display: none;">Menu</button></a>
 </div>
+
+
 
 <!-- Contadores -->
 <h2 id="puntos"></h2>
@@ -59,7 +64,12 @@
       let pacman4Muerte = null;
       let pacman5Muerte = null;
       let vidaPacmanImg = null;
-      let portal = null;
+      let portal1 = null;
+      let portal2 = null;
+      let portal3 = null;
+      let portal4 = null;
+      let portal5 = null;
+      let portal6 = null;
       let portal1_explosion = null;
       let portal2_explosion = null;
       let portal3_explosion = null;
@@ -105,12 +115,16 @@
 
           } if (cell == 6) {
 
+            
             processing.fill(0, 0, 0);
-            if (world.time % 2 == 0)
-              processing.image(portal, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
-            else
-              processing.image(portal, j * SIZE + 7.5 , i * SIZE + 7.5 , 35 , 35 );
 
+            if(world.time % 1 == 0) processing.image(portal1, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
+            if(world.time % 2 == 0) processing.image(portal2, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
+            if(world.time % 3 == 0) processing.image(portal3, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
+            if(world.time % 4 == 0) processing.image(portal4, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
+            if(world.time % 5 == 0) processing.image(portal5, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
+            if(world.time % 6 == 0) processing.image(portal6, j * SIZE + 5 , i * SIZE + 5 , 40 , 40 );
+            
           } if(cell == 11){
 
             if(world.modoPortal){
@@ -1094,7 +1108,12 @@ function fantasmasIA(world,fantasma,pacmancito){
       pacman4Muerte = processing.loadImage('Images/muerte/pacman4Muerte.png');
       pacman5Muerte = processing.loadImage('Images/muerte/pacman5Muerte.png');
       vidaPacmanImg = processing.loadImage('Images/vidaPacman.png');
-      portal = processing.loadImage("Images/portal.gif");
+      portal1 = processing.loadImage("Images/Portal/Portal1.jpg");
+      portal2 = processing.loadImage("Images/Portal/Portal2.jpg");
+      portal3 = processing.loadImage("Images/Portal/Portal3.jpg");
+      portal4 = processing.loadImage("Images/Portal/Portal4.jpg");
+      portal5 = processing.loadImage("Images/Portal/Portal5.jpg");
+      portal6 = processing.loadImage("Images/Portal/Portal6.jpg");
       portal1_explosion = processing.loadImage('Images/portal1-explosion.png');
       portal2_explosion = processing.loadImage('Images/portal2-explosion.png');
       portal3_explosion = processing.loadImage('Images/portal3-explosion.png');
@@ -1172,7 +1191,7 @@ function fantasmasIA(world,fantasma,pacmancito){
       // GUI
 
       processing.textFont(MyFont);
-      processing.fill(255,255,255);
+      processing.fill(200, 214, 229);
       processing.textSize(80);
       processing.text("PUNTOS : " + acumuladoTotal(world.mapa,0,world),800,870) ;
       processing.text("TIEMPO : " + world.time_real,800,820);
